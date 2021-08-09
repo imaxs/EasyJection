@@ -13,7 +13,9 @@
   * [Introduction](#introduction)
     * [What is this?](#what-is-this)
     * [Why use this?](#why-use-this)
+    * [Why use it with Unity?](#why-use-it-with-unity)
   * [Key Features and Concepts](#key-features-and-concepts)
+  * [Motivation](#motivation)
   * [Installation](#installation)
   * [Examples](#examples)
   * [Change Log](#change-log)
@@ -30,11 +32,36 @@ The framework implements dependency injection **without** using attributes. Such
 This project is open source.
 
 #### Why use this? ####
-If you're familiar with dependency injection and see how EasyJection could help your project, check out the set-up and [features](#features) to see more. If not, read on:
+If you're familiar with dependency injection and see how EasyJection could help your project, check out the [installation](#installation) and [key features](#key-features-and-concepts) to see more. If not, read on:
 
-Dependency injection is an intimidating word for a simple concept you're likely familiar with. It simply means if ObjectA creates ObjectB, then ObjectA resolves all of ObjectsB's dependencies (i.e. fields & properties).
+Dependency Injection (DI) is an intimidating word for a simple concept you're likely familiar with. Dependency Injection in simple words, is a software design concept that allows a service to be injected in a way that is completely independent of any client consumption. Dependency Injection separates the creation of a client's dependencies from the client's behavior, which allows program designs to be loosely coupled. A DI container, in pair with a good architecture, can ensure [SOLID](https://en.wikipedia.org/wiki/SOLID) principles and help you write better code.
+
+In its simpler form it usually looks like this:
+<p><img src="https://github.com/imaxs/EasyJection/blob/main/Documentation/Images/di_scheme.png" width="75%"/></p>
+More details can be found here: https://en.wikipedia.org/wiki/Dependency_injection
+
+#### Why use it with Unity? ####
+Unfortunately the Unity game engine isn't very SOLID-friendly out of the box. Even the official documentation and examples for it may give a wrong idea on how to write a code correctly. By using a DI container along with Unity, it's possible to write code that is more reusable, extensible and less oriented to use the [base class](https://docs.unity3d.com/ScriptReference/MonoBehaviour.html) from which every Unity script derives.
 
 ## Key Features and Concepts ##
+
+  * Injection Mechanisms
+    * Standard C# objects *(a.k.a. [POCO](https://ru.wikipedia.org/wiki/Plain_old_CLR_object))*
+      * Constructor injection
+      * Method injection
+      * Field injection
+      * Property injection
+    * Inherited from MonoBehaviour
+      * Method injection *(through Awake() and Start(), or other custom methods)*
+      * Field injection
+      * Property injection
+  * Can inject on non public members.
+  * Convention based binding *(based on type name, namespace, etc.)*
+  * Conditional binding *(eg. by name, by signature, etc.)*
+  * Can inject type instances that are not bound to the container.
+  * Support for context sensitive injection *(dependencies can be automatically injected using the components contained in the child and parents)*
+
+## Motivation ##
 
 ## Installation ##
 
