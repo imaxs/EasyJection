@@ -59,7 +59,7 @@ Unfortunately the Unity game engine isn't very SOLID-friendly out of the box. Ev
   * Convention based binding *(based on type name, namespace, etc.)*
   * Conditional binding *(eg. by name, by signature, etc.)*
   * Can inject type instances that are not bound to the container.
-  * Support for context sensitive injection *(dependencies can be automatically injected using the components contained in the child and parents)*
+  * Context Aware Injection Support *(dependencies can be automatically injected using the components contained in the child and parents)*
 
 ## Motivation ##
 
