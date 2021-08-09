@@ -13,7 +13,7 @@
   * [Introduction](#introduction)
     * [What is this?](#what-is-this)
     * [Why use this?](#why-use-this)
-  * [Features](#features)
+  * [Key Features and Concepts](#key-features-and-concepts)
   * [Installation](#installation)
   * [Examples](#examples)
   * [Change Log](#change-log)
@@ -34,7 +34,7 @@ If you're familiar with dependency injection and see how EasyJection could help 
 
 Dependency injection is an intimidating word for a simple concept you're likely familiar with. It simply means if ObjectA creates ObjectB, then ObjectA resolves all of ObjectsB's dependencies (i.e. fields & properties).
 
-## Features ##
+## Key Features and Concepts ##
 
 ## Installation ##
 
