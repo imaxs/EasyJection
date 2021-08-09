@@ -1,0 +1,16 @@
+{
+  "name": "com.imaxs.easyjection",
+  "version": "0.1.0",
+  "displayName": "EasyJection",
+  "description": "EasyJection is an easy-to-use Dependency Injection (DI) Framework for C#(.Net) and Unity projects",
+  "unity": "2021.2.0",
+  "documentationUrl": "https://github.com/imaxs/EasyJection/tree/main",
+  "changelogUrl": "https://github.com/imaxs/EasyJection/blob/main/CHANGELOG.md",
+  "licensesUrl": "https://github.com/imaxs/EasyJection/blob/main/LICENSE",
+  "license": "Apache-2.0",
+  "keywords": ["Dependency Injection", "IoC", "DI", "DI Container", "Inversion of Control"],
+  "author": {
+    "name": "Max Karepin",
+    "url": "https://www.linkedin.com/in/max-kv/"
+  }
+}
