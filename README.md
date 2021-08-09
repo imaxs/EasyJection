@@ -82,7 +82,7 @@ Here's how we suggest you make changes to this project:
  - [Fork](https://help.github.com/articles/fork-a-repo/) this project to your account.
  - [Create a branch](https://help.github.com/articles/creating-and-deleting-branches-within-your-repository) for the change you intend to make.
  - Make your changes to your fork.
- - Send a [pull request](https://help.github.com/articles/using-pull-requests/) from your fork’s branch to our `develop` branch.
+ - Send a [pull request](https://help.github.com/articles/using-pull-requests/) from your fork’s branch to our [`develop`](https://github.com/imaxs/EasyJection/tree/develop) branch.
 
 ## 📄 License ##
 
