@@ -66,10 +66,9 @@ Unfortunately the Unity game engine isn't very SOLID-friendly out of the box. Ev
 
 ## 🛠 Installation ##
 
-#### Install via UPM (using Git URL) ####
-*Requires Unity 2019+* <br/>
+### You can install EasyJection using any of the below options: ###
+#### 🔘 Adding a line to Packages/manifest.json ####
 You can use the path query parameter in the Git URL to notify the Package Manager where to find the package.
-
 ```
 {
   "dependencies": {
@@ -77,15 +76,37 @@ You can use the path query parameter in the Git URL to notify the Package Manage
   }
 }
 ```
-or `Window` -> `Package Manager` -> + `sign` -> `Add via git url`:
+#### 🔘 Install via UPM *(Requires Unity 2019+)* ####
+`Window` ⇨ `Package Manager` ⇨ `+ sign` ⇨ `Add package from git URL`: <br/>*`https://github.com/imaxs/EasyJection.git?path=/UnityPackage`*
 
-```https://github.com/imaxs/EasyJection.git?path=/UnityPackage```
+#### 🔘 Install manually ####
+- `Download the .unitypackage from [releases page](https://github.com/imaxs/EasyJection/releases)`
+- `Import EasyJection.X.X.X.unitypackage`
 
 ## 🎲 Examples ##
+### DI / IoC container ###
+
+DI container (a.k.a IoC Container) is a key feature of the dependency injection implementation. The container creates an object of the specified class and then automatically injects all the dependency objects through a class constructor, property, field or method at runtime. This is done automatically by the DI (IoC) container so that you don’t have to create and manage these dependency objects manually.
+
+```csharp
+// Create the DI/IoC container.
+Container container = new Container();
+```
+
+### Bindings ###
+This works the same for both reference *(class)* and value types *(struct)*.
+```csharp
+// Binding some interface to its class implementation
+container.Binder.Bind<ISomeInterface>().To<SomeClass>()
+```
+```csharp
+// Binds the key type to a transient of itself.
+container.Binder.Bind<Vector3>().ToSelf().ConstructionMethod().WithArguments<int, int, int>(4, 9, 3);
+```
 
 ## 💾 Change Log ##
 
-All notable changes to this project will be documented in [CHANGELOG](#change-log) file. <br/>
+All notable changes to this project will be documented in [CHANGELOG](https://github.com/imaxs/EasyJection/blob/main/CHANGELOG.md) file. <br/>
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## 👽 Contributing ##
