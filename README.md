@@ -9,7 +9,6 @@
 ## 🗂 Contents ##
 
 <details>
-  
   * [Introduction](#-introduction)
     * [What is this?](#what-is-this)
     * [Why use this?](#why-use-this)
@@ -64,6 +63,21 @@ Unfortunately the Unity game engine isn't very SOLID-friendly out of the box. Ev
 ## 💡 Motivation ##
 
 ## 🛠 Installation ##
+
+#### Install via UPM (using Git URL) ####
+*Requires Unity 2019+* <br/>
+You can use the path query parameter in the Git URL to notify the Package Manager where to find the package.
+
+```
+{
+  "dependencies": {
+    "com.imaxs.easyjection": "https://github.com/imaxs/EasyJection.git?path=/UnityPackage"
+  }
+}
+```
+or `Window` -> `Package Manager` -> + `sign` -> `Add via git url`:
+
+```https://github.com/imaxs/EasyJection.git?path=/UnityPackage```
 
 ## 🎲 Examples ##
 
