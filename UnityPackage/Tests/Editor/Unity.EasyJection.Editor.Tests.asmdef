@@ -1,0 +1,26 @@
+{
+    "name": "Unity.EasyJection.Editor.Tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:e372c541aba5148868e12aa078ca7c20",
+        "GUID:b2514e70d34064a1aa6a671caf19e152"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "Castle.Core.dll",
+        "NSubstitute.dll",
+        "System.Threading.Tasks.Extensions.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
