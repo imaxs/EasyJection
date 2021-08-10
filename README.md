@@ -9,6 +9,7 @@
 ## 🗂 Contents ##
 
 <details>
+
   * [Introduction](#-introduction)
     * [What is this?](#what-is-this)
     * [Why use this?](#why-use-this)
@@ -20,6 +21,7 @@
   * [Change Log](#-change-log)
   * [Contributing](#-contributing)
   * [License](#-license)
+ 
 </details>
 
 ## 📝 Introduction ##
