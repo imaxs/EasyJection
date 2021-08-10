@@ -80,8 +80,8 @@ You can use the path query parameter in the Git URL to notify the Package Manage
 `Window` ⇨ `Package Manager` ⇨ `+ sign` ⇨ `Add package from git URL`: <br/>*`https://github.com/imaxs/EasyJection.git?path=/UnityPackage`*
 
 #### 🔘 Install manually ####
-- `Download the .unitypackage from [releases page](https://github.com/imaxs/EasyJection/releases)`
-- `Import EasyJection.X.X.X.unitypackage`
+- Download the .unitypackage from [releases page](https://github.com/imaxs/EasyJection/releases)
+- Import EasyJection.X.X.X.unitypackage
 
 ## 🎲 Examples ##
 ### DI / IoC container ###
@@ -89,19 +89,102 @@ You can use the path query parameter in the Git URL to notify the Package Manage
 DI container (a.k.a IoC Container) is a key feature of the dependency injection implementation. The container creates an object of the specified class and then automatically injects all the dependency objects through a class constructor, property, field or method at runtime. This is done automatically by the DI (IoC) container so that you don’t have to create and manage these dependency objects manually.
 
 ```csharp
-// Create the DI/IoC container.
+using EasyJection;
+...
+// Create the DI/IoC container
 Container container = new Container();
 ```
 
 ### Bindings ###
-This works the same for both reference *(class)* and value types *(struct)*.
+This works the same for both reference *(class)* and value *(struct)* types.
 ```csharp
 // Binding some interface to its class implementation
-container.Binder.Bind<ISomeInterface>().To<SomeClass>()
+container.Binder.Bind<ISomeInterface>().To<SomeClass>();
 ```
 ```csharp
-// Binds the key type to a transient of itself.
-container.Binder.Bind<Vector3>().ToSelf().ConstructionMethod().WithArguments<int, int, int>(4, 9, 3);
+// Binding some interface to its struct implementation
+container.Binder.Bind<IStructInterface>().To<SomeStruct>();
+```
+
+#### Available Bindings ####
+
+##### To Implementation Type ####
+```csharp
+// A new instance is created each time a dependency needs to be resolved
+container.Binder.Bind<ISomeInterface>().To<SomeClass>();
+```
+##### To Single #####
+```csharp
+// A single instance of the implementation type is created
+container.Binder.Bind<ISomeInterface>().To<SomeClass>().AsSingle();
+```
+##### To Self #####
+```csharp
+// Binding the type to the transient of itself
+container.Binder.Bind<SomeClass>().ToSelf();
+```
+#### Conditions ####
+If you don’t provide a constructor for your class, a new instance is created using the default constructor `new()`, C# creates one and sets member variables to the default values. `Note that a value type (C# struct ) can't have a constructor with no parameters.` Otherwise you can specify a constructor to use to instantiate your type, this is possible in several ways:
+##### Passing values to a constructor #####
+```csharp
+// A ValueType constructor with 3 arguments (parameters). The maximum number of parameters is 9.
+// Instances will be created with the specified argument values
+container.Binder.Bind<Vector3>().ToSelf().ConstructionMethod().WithArguments<int, int, int>(4, 2, 3);
+```
+You can pass NULL as a constructor parameter if the specific parameter is a reference type or interface. The injection will be done into constructor parameters and NULL will be changed to a value of the specific implementation contained in the container.
+```csharp
+// A ValueType constructor with 3 arguments (parameters). The maximum number of parameters is 9.
+// Instances will be created with the specified argument values
+// The injection will be done into constructor parameters
+container.Binder.Bind<ISomeInterface>().To<SomeClass>()
+                .ConstructionMethod().WithArguments<IArgumentInterface, string, int>(null, "Some Text", 2021);
+```
+##### Without passing values to a constructor #####
+A function/method signature include parameters and their types.
+```csharp
+// Constructor with 1 argument (parameter). The maximum number of parameters is 9
+// The injection will be done into constructor parameters
+container.Binder.Bind<ISomeInterface>().To<SomeClass>().ConstructionMethod().Signature<Vector2>();
+```
+By the name of the method that is used as the constructor. The injection will be done into an instance when this method is called. With the way Unity works, you're supposed to use *Awake()* and *Start()* to handle initialization behavior.
+```csharp
+// A Method named "Awake"
+container.Binder.Bind<MonoBehaviourGameObject>().ToSelf().ConstructionMethod("Awake");
+```
+### Injection ###
+#### Injection directly ####
+```csharp
+// An instance of a type that requires dependency injection
+AppClass app = new AppClass();
+// Injection
+container.Inject(app);
+....
+public class AppClass
+{
+    // Property injection occurs immediately after the constructor method is called
+    private ISomeInterface m_someDependence;
+    ...
+}
+```
+#### Injection via hook  ####
+```csharp
+// Adding a constructor by name to the binding
+container.Binder.Bind<AppClass>().ToSelf().ConstructionMethod("Awake");
+// An instance of a type that requires dependency injection
+AppClass app = new AppClass();
+// Calling the method
+app.Awake();
+....
+public class AppClass
+{
+    // Property injection occurs immediately after the method named "Awake" is called
+    private ISomeInterface m_someDependence;
+    // Almost like in MonoBehaviour ;)
+    private void Awake()
+    {
+     ...
+    }
+}
 ```
 
 ## 💾 Change Log ##
