@@ -86,7 +86,7 @@ You can use the path query parameter in the Git URL to notify the Package Manage
 ## 🎲 Examples ##
 ### DI / IoC container ###
 
-DI container (a.k.a IoC Container) is a key feature of the dependency injection implementation. The container creates an object of the specified class and then automatically injects all the dependency objects through a class constructor, property, field or method at runtime. This is done automatically by the DI (IoC) container so that you don’t have to create and manage these dependency objects manually.
+DI container (a.k.a IoC Container) is a key feature of the dependency injection implementation. The container creates an object of the specified type and then automatically injects all the dependency objects through a constructor, property, field or method at runtime. This is done automatically by the DI (IoC) container so that you don’t have to create and manage these dependency objects manually.
 
 ```csharp
 using EasyJection;
@@ -130,6 +130,8 @@ If you don’t provide a constructor for your class, a new instance is created u
 // A ValueType constructor with 3 arguments (parameters). The maximum number of parameters is 9.
 // Instances will be created with the specified argument values
 container.Binder.Bind<Vector3>().ToSelf().ConstructionMethod().WithArguments<int, int, int>(4, 2, 3);
+// or
+binder.Bind<ISomeInterface>().To<SomeClass>().ConstructionMethod().WithArguments(new object[]{ "Some Text", 2021 });
 ```
 You can pass NULL as a constructor parameter if the specific parameter is a reference type or interface. The injection will be done into constructor parameters and NULL will be changed to a value of the specific implementation contained in the container.
 ```csharp
