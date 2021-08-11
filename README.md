@@ -191,7 +191,10 @@ public class AppClass
 
 ## 💾 Change Log ##
 
-All notable changes to this project will be documented in [CHANGELOG](https://github.com/imaxs/EasyJection/blob/main/CHANGELOG.md) file. <br/>
+All notable changes to this project will be documented in files:
+ 1. This [CHANGELOG](./Framework/CHANGELOG.md) includes the changes in recent updates of the framework.
+ 2. This [CHANGELOG](./UnityPackage/CHANGELOG.md) only contains changes specific to a package (UnityPackage).
+
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## 👽 Contributing ##
