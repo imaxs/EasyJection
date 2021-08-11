@@ -29,7 +29,7 @@ You can use the path query parameter in the Git URL to notify the Package Manage
 
 ## 💾 Change Log ##
 
-All notable changes to this project will be documented in [CHANGELOG](./UnityPackage/CHANGELOG.md).
+All notable changes to this project will be documented in [CHANGELOG](./CHANGELOG.md).
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/).
 
