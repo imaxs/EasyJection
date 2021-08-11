@@ -131,7 +131,7 @@ If you don’t provide a constructor for your class, a new instance is created u
 // Instances will be created with the specified argument values
 container.Binder.Bind<Vector3>().ToSelf().ConstructionMethod().WithArguments<int, int, int>(4, 2, 3);
 // or
-binder.Bind<ISomeInterface>().To<SomeClass>().ConstructionMethod().WithArguments(new object[]{ "Some Text", 2021 });
+container.Binder.Bind<ISomeInterface>().To<SomeClass>().ConstructionMethod().WithArguments(new object[]{ "Some Text", 2021 });
 ```
 You can pass NULL as a constructor parameter if the specific parameter is a reference type or interface. The injection will be done into constructor parameters and NULL will be changed to a value of the specific implementation contained in the container.
 ```csharp
