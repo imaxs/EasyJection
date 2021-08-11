@@ -6,7 +6,7 @@
 ![GitHub issues](https://img.shields.io/github/issues/imaxs/EasyJection?style=flat-square)
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/imaxs/EasyJection/main?style=flat-square)
 ------------------------
-<table> <tr> <td> <h1>❗</h1> </td> <td> <h4> This README contains information primarily related to the Unity package.<br/> You can read the full README file here: <br/> https://github.com/imaxs/EasyJection/edit/main/README.md </h4> </td> </tr> </table>
+<table> <tr> <td> <h1>❗</h1> </td> <td> <h4> This README contains information primarily related to the Unity package.<br/> You can read the full README file here: <br/> https://github.com/imaxs/EasyJection/blob/main/README.md </h4> </td> </tr> </table>
 
 ## 🛠 Installation ##
 
