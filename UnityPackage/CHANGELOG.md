@@ -17,6 +17,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Initial release
 ### Added
   - Support for framework features v0.1.0
-  - Unit tests
+  - Unit tests (Unity Test Framework)
   - IL2CPP support (Native plug-in)
   
