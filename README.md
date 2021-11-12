@@ -47,7 +47,7 @@ Unfortunately the Unity game engine isn't very SOLID-friendly out of the box. Ev
 ## 🪆 Key Features and Concepts ##
 
   * Injection Mechanisms
-    * Standard C# objects *(a.k.a. [POCO](https://ru.wikipedia.org/wiki/Plain_old_CLR_object))*
+    * Standard C# objects *(a.k.a. [POCO](https://en.wikipedia.org/wiki/Plain_old_CLR_object))*
       * Constructor injection
       * Method injection
       * Field injection
