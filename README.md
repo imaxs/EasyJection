@@ -65,7 +65,7 @@ Unfortunately the Unity game engine isn't very SOLID-friendly out of the box. Ev
   * Context Aware Injection Support *(dependencies can be automatically injected using the components contained in the child and parents)*
 
 ## 💡 Motivation ##
-Usually, when developing a project in Unity, it's often necessary for one system of the game object to reference another. For example, a game object needs a reference to a motion component. it might look like below:
+Usually, when developing a project in Unity, it's often necessary for one system of the game object to reference another. For example, a game object needs a reference to a movement component. It might look like below:
 
 ```csharp
 // Cube.cs
