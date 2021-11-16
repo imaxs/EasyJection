@@ -354,7 +354,7 @@ public class EntryPoint
 </td></tr>
 </table>
 
-Now when creating a game object, something like this:
+Create a game object, something like this:
 ```csharp
  GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
  cube.AddComponent<Cube>()
