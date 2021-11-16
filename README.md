@@ -418,6 +418,11 @@ using EasyJection;
 Container container = new Container();
 ```
 
+You should call `ResolveAll()` method after all of the bindings have been set up.
+```csharp
+container.ResolveAll();
+```
+
 ### Bindings ###
 This works the same for both reference *(class)* and value *(struct)* types.
 ```csharp
