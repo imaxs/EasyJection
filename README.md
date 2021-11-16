@@ -581,13 +581,13 @@ You can set the type of call sequence:
 ```csharp
 container.Binder.Bind<IRotate>()
                 .To<Rotate>()
-                .Sequence(SequenceType.InjectionBeforeInstantiation);
+                .Sequence(SequenceType.InjectionBefore);
 ```
 The `SequenceType` enum has two value:
- - `InjectionBeforeInstantiation` — The injection is done before the actual body of the method.
- - `InjectionAfterInstantiation` — The injection is done after the actual body of the method.
+ - `InjectionBefore` — The injection is done before the actual body of the method.
+ - `InjectionAfter` — The injection is done after the actual body of the method.
 
-By default it is set to `SequenceType.InjectionBeforeInstantiation`
+By default it is set to `SequenceType.InjectionBefore`
  
 In C# a method declaration consists of the following components as follows:
 
