@@ -362,7 +362,7 @@ Now when creating a game object, something like this:
  
 **This works great too!**
 
->Note: Attempting to get any MonoBehaviour component inside a constructor of class 'Rotate' will throw an exception, since the injection is done through the constructor of an object inherited from MonoBehaviour.
+>Note: Attempting to get any MonoBehaviour component inside a constructor of class 'Rotate' will throw an exception, since the injection is done via a constructor of an object inherited from MonoBehaviour.
 
 <details>
  <summary>The code below throws an UnityException</summary>
@@ -444,7 +444,9 @@ container.Binder.Bind<ISomeInterface>().To<SomeClass>();
 ##### To Single #####
 ```csharp
 // A single instance of the implementation type is created
-container.Binder.Bind<ISomeInterface>().To<SomeClass>().AsSingle();
+container.Binder.Bind<ISomeInterface>()
+                .To<SomeClass>()
+                .AsSingle();
 ```
 ##### To Self #####
 ```csharp
@@ -559,8 +561,10 @@ public class AppClass
 }
 ```
 ```csharp
-// By default, injection into a class instance is done when the constructor is called.
-container.Binder.Bind<AppClass>().ToSelf().ManualInjectionOnly();
+// Injection via the default constructor
+container.Binder.Bind<AppClass>()
+                .ToSelf()
+                .ManualInjectionOnly();
 container.ResolveAll();
 ```
 ```csharp
@@ -569,7 +573,22 @@ AppClass app = new AppClass();
 // Injection
 container.DI.Inject(app);
 ```
+### Injection conditions ###
+ 
+One of the most basic feature of EasyJection is adding injection call at the beginning and end of target methods/constructors. This applies to all cases, except for manual injection. As mentioned above, by default injection is done via constructor or method.
 
+You can set the type of call sequence:
+```csharp
+container.Binder.Bind<IRotate>()
+                .To<Rotate>()
+                .Sequence(SequenceType.InjectionBeforeInstantiation);
+```
+The `SequenceType` enum has two value:
+ - `InjectionBeforeInstantiation` — The injection is done before the actual body of the method.
+ - `InjectionAfterInstantiation` — The injection is done after the actual body of the method.
+
+ <p><img src="./Documentation/Images/method.png" width="75%"/></p>
+ 
 ## 💾 Change Log ##
 
 All notable changes to this project will be documented in files:
