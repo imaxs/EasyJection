@@ -145,7 +145,7 @@ public class Cube : MonoBehaviour
 - As in the previous solution, extending and maintaining the classes in your project will take a lot more effort.
 - *Cube* class indirectly begins to know where it gets its dependency from.
 
-**EaseJection was created to solve exactly this problems:**
+**EaseJection was created to solve exactly these problems:**
 <table>
 <tr><td>Source code of the project <b>without</b> <code>using EasyJection;</code> directive.</td></tr>
 <tr><td>
