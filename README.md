@@ -6,9 +6,11 @@
 ![GitHub issues](https://img.shields.io/github/issues/imaxs/EasyJection?style=flat-square)
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/imaxs/EasyJection/main?style=flat-square)
 
-✅ | Without using attributes
+✅ | <code><b>Quick and easy setup to get started</b></code>
 :---: | :---
-✅ | **Without having to add a Using directive to your project source files which use DI**
+✅ | <code><b>Without using attributes</b></code>
+✅ | <code><b>There is no need to add a Using directive to each project file that uses DI</b></code>
+✅ | <code><b>Allows for much more flexible, reusable, and encapsulated code to be written</b></code>
 
 ## 🗂 Contents ##
 
@@ -38,7 +40,7 @@ If you're familiar with dependency injection and see how EasyJection could help 
 Dependency Injection (DI) is an intimidating word for a simple concept you're likely familiar with. Dependency Injection in simple words, is a software design concept that allows a service to be injected in a way that is completely independent of any client consumption. Dependency Injection separates the creation of a client's dependencies from the client's behavior, which allows program designs to be loosely coupled. A DI container, in pair with a good architecture, can ensure [SOLID](https://en.wikipedia.org/wiki/SOLID) principles and help you write better code.
 
 In its simpler form it usually looks like this:
-<p><img src="https://github.com/imaxs/EasyJection/blob/main/Documentation/Images/di_scheme.png" width="75%"/></p>
+<p><img src="./Documentation/Images/Dependency_Injection.jpeg" width="75%"/></p>
 More details can be found here: https://en.wikipedia.org/wiki/Dependency_injection
 
 #### Why use it with Unity? ####
@@ -217,6 +219,10 @@ public class Rotate : IRotate
 using UnityEngine;
 using EasyJection;
 
+/*
+  This is the entry point of the application, where EasyJection sets up 
+  all the various dependencies before starting your game scene.
+*/
 public class EntryPoint
 {
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -231,6 +237,13 @@ public class EntryPoint
         container.Binder.Bind<IRotate>().To<Rotate>();
         container.Binder.Bind<Cube>().ToSelf().ConstructionMethod("Awake");
         container.ResolveAll();
+ 
+        /* Note: You can also create a container and set bindings in a class inherited
+                 from MonoBehaviour and then add the script to the current active scene.
+                 This script needs to be called first. Verify the script execution order
+                 in Unity by accessing the menu: Edit->Project Settings->Script Execution Order 
+                 and add the script to execute before all other scripts. Enter a large 
+                 negative number to have this script before all the others on the list. */
     }
 }
 ``` 
@@ -251,7 +264,129 @@ public class EntryPoint
 As you can see, the framework does all the work of resolving the dependencies.
  
 **There is also an alternative way:**
+<table>
+<tr><td>Source code of the project <b>without</b> <code>using EasyJection;</code> directive.</td></tr>
+<tr><td>
+<code>Removed Awake () method</code>
+<details>
+ <summary>Cube.cs</summary>
  
+ ```csharp
+// Cube.cs
+using UnityEngine;
+
+public class Cube : MonoBehaviour
+{
+    private IRotate m_RotateSystem;
+ 
+    private void Update()
+    {
+        m_RotateSystem.DoRotate(0, 0.25f, 0);
+    }
+}
+```
+</details>
+</td></tr>
+<tr><td>
+<code>no change</code>
+<details>
+ <summary>IRotate.cs</summary>
+ 
+ ```csharp
+// IRotate.cs
+using UnityEngine;
+
+public interface IRotate
+{
+    void DoRotate(float x, float y, float z);
+}
+```
+</details>
+</td></tr>
+<tr><td>
+<code>no change</code>
+<details>
+ <summary>Rotate.cs</summary>
+ 
+ ```csharp
+// Rotate.cs
+using UnityEngine;
+
+public class Rotate : IRotate
+{
+    private Cube m_Cube;
+
+    public void DoRotate(float x, float y, float z)
+    {
+        m_Cube.transform.Rotate(x, y, z);
+    }
+}
+```
+</details>
+</td></tr>
+</table>
+
+<table>
+<tr><td>Source code <b>with</b> <code>using EasyJection;</code> directive.</td></tr>
+<tr><td>
+<code>Changed a binding for 'Cube' type with injection via the default constructor</code>
+<details>
+ <summary>EntryPoint.cs</summary>
+ 
+ ```csharp
+// EntryPoint.cs
+using UnityEngine;
+using EasyJection;
+
+public class EntryPoint
+{
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    static void OnBeforeSceneLoadRuntimeMethod()
+    {
+        Container container = new Container();
+        container.Binder.Bind<IRotate>().To<Rotate>();
+        container.Binder.Bind<Cube>().ToSelf(); // <-- Default constructor injection
+        container.ResolveAll();
+    }
+}
+``` 
+</details>
+</td></tr>
+</table>
+
+Now when creating a game object, something like this:
+```csharp
+ GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+ cube.AddComponent<Cube>()
+```
+ 
+**This works great too!**
+
+>Note: Attempting to get any of any MonoBehaviour component inside a constructor of class 'Rotate' will throw an exception, since the injection is done through the constructor of an object inherited from MonoBehaviour.
+
+<details>
+ <summary>The code below throws an UnityException</summary>
+ 
+```csharp
+public class Rotate : IRotate
+{
+    private Cube m_Cube;
+    private Transform m_Transform;
+ 
+    public Rotate(Cube cube)
+    {
+       m_Cube = cube;
+       m_Transform = cube.transform; // <-- UnityException: get_transform is not allowed to be called from a MonoBehaviour constructor (or instance field initializer), call it in Awake or Start instead. Called from MonoBehaviour 'Cube'.
+    }
+
+    public void DoRotate(float x, float y, float z)
+    {
+        m_Cube.transform.Rotate(x, y, z);
+    }
+}
+```
+</details>
+                                            
 ## 🛠 Installation ##
 
 ### You can install EasyJection using any of the below options: ###
