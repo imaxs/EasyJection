@@ -240,10 +240,12 @@ public class EntryPoint
 
 <details>
  <summary>Attaching the script to the game object</summary>
+ <img src="https://github.com/imaxs/EasyJection/blob/develop/Documentation/Images/Inspector.png?sanitize=true)"/>
 </details>
  
 <details>
  <summary>Result</summary>
+ <img src="https://github.com/imaxs/EasyJection/blob/develop/Documentation/Images/result.gif?sanitize=true)"/>
 </details>
 
 As you can see, the framework does all the work of resolving the dependencies.
