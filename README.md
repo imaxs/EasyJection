@@ -157,7 +157,8 @@ using UnityEngine;
 public class Cube : MonoBehaviour
 {
     private IRotate m_RotateSystem;
-
+    
+    // Injection is done when this method is called.
     private void Awake() { }
 
     private void Update()
@@ -245,6 +246,10 @@ public class EntryPoint
  <summary>Result</summary>
 </details>
 
+As you can see, the framework does all the work of resolving the dependencies.
+ 
+**There is also an alternative way:**
+ 
 ## 🛠 Installation ##
 
 ### You can install EasyJection using any of the below options: ###
@@ -392,7 +397,9 @@ public class AppClass
 ```
 ```csharp
 // Specifies the name of the method performs the injection when its called.
-container.Binder.Bind<AppClass>().ToSelf().ConstructionMethod("Awake");
+container.Binder.Bind<AppClass>()
+                .ToSelf()
+                .ConstructionMethod("Awake");
 container.ResolveAll();
 ```
 ```csharp
