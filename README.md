@@ -310,9 +310,15 @@ If you don’t provide a constructor for your class, a new instance is created u
 ```csharp
 // A ValueType constructor with 3 arguments (parameters). The maximum number of parameters is 9.
 // Instances will be created with the specified argument values
-container.Binder.Bind<Vector2>().ToSelf().ConstructionMethod().WithArguments<int, int>(4, 2);
+container.Binder.Bind<Vector2>()
+                .ToSelf()
+                .ConstructionMethod()
+                .WithArguments<int, int>(4, 2);
 // or
-container.Binder.Bind<ISomeInterface>().To<SomeClass>().ConstructionMethod().WithArguments(new object[]{ "Some Text", 2021 });
+container.Binder.Bind<ISomeInterface>()
+                .To<SomeClass>()
+                .ConstructionMethod()
+                .WithArguments(new object[]{ "Some Text", 2021 });
 ```
 You can pass NULL as a constructor parameter if the specific parameter is a reference type or interface. The injection will be done into constructor parameters and NULL will be changed to a value of the specific implementation contained in the container.
 ```csharp
