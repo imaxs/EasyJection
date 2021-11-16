@@ -362,7 +362,7 @@ Now when creating a game object, something like this:
  
 **This works great too!**
 
->Note: Attempting to get any of any MonoBehaviour component inside a constructor of class 'Rotate' will throw an exception, since the injection is done through the constructor of an object inherited from MonoBehaviour.
+>Note: Attempting to get any MonoBehaviour component inside a constructor of class 'Rotate' will throw an exception, since the injection is done through the constructor of an object inherited from MonoBehaviour.
 
 <details>
  <summary>The code below throws an UnityException</summary>
