@@ -587,7 +587,17 @@ The `SequenceType` enum has two value:
  - `InjectionBeforeInstantiation` — The injection is done before the actual body of the method.
  - `InjectionAfterInstantiation` — The injection is done after the actual body of the method.
 
- <p><img src="./Documentation/Images/method.png" width="75%"/></p>
+By default it is set to `SequenceType.InjectionBeforeInstantiation`
+ 
+In C# a method declaration consists of the following components as follows:
+
+ <img src="./Documentation/Images/method.png" width="60%"/>
+ 
+ - **Modifier** — It defines access type of the method i.e. from where it can be accessed in your application. In C# there are Public, Protected, Private access modifiers. 
+ - **Name of the Method** — It describes the name of the user defined method by which the user calls it or refer it. Eg. GetName()
+ - **Return type** — It defines the data type returned by the method. It depends upon user as it may also return void value i.e return nothing
+ - **Body of the Method** — It refers to the line of code of tasks to be performed by the method during its execution. It is enclosed between braces.
+ - **Parameter list** — Comma separated list of the input parameters are defined, preceded with their data type, within the enclosed parenthesis. If there are no parameters, then empty parentheses () have to use out.
  
 ## 💾 Change Log ##
 
