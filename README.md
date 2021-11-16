@@ -6,9 +6,11 @@
 ![GitHub issues](https://img.shields.io/github/issues/imaxs/EasyJection?style=flat-square)
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/imaxs/EasyJection/main?style=flat-square)
 
-## 🗂 Contents ##
+✅ | Without using attributes
+:---: | :---
+✅ | **Without having to add a Using directive to your project source files which use DI**
 
-<details>
+## 🗂 Contents ##
 
   * [Introduction](#-introduction)
     * [What is this?](#what-is-this)
@@ -21,8 +23,6 @@
   * [Change Log](#-change-log)
   * [Contributing](#-contributing)
   * [License](#-license)
- 
-</details>
 
 ## 📝 Introduction ##
 #### What is this? ####
@@ -53,16 +53,197 @@ Unfortunately the Unity game engine isn't very SOLID-friendly out of the box. Ev
       * Field injection
       * Property injection
     * Inherited from MonoBehaviour
+      * Constructor injection *(as the Unity documentation says, you shouldn't implement and call constructors for MonoBehaviours. Unity automatically invokes the constructor.)*
       * Method injection *(through Awake() and Start(), or other custom methods)*
       * Field injection
       * Property injection
   * Can inject on non public members.
   * Convention based binding *(based on type name, namespace, etc.)*
   * Conditional binding *(eg. by name, by signature, etc.)*
-  * Can inject type instances that are not bound to the container.
   * Context Aware Injection Support *(dependencies can be automatically injected using the components contained in the child and parents)*
 
 ## 💡 Motivation ##
+Usually, when developing a project in Unity, it's often necessary for one system of the game object to reference another. For example, a game object needs a reference to a motion component. it might look like below:
+
+```csharp
+// Cube.cs
+using UnityEngine;
+
+public class Cube : MonoBehaviour
+{
+    [SerializeField]
+    // The dependency that provides an implementation of the rotating system.
+    private IRotate m_RotateSystem;
+    
+    private void Update()
+    {
+        m_RotateSystem.DoRotate(0, 0.25f, 0);
+    }
+}
+```
+**This approach has some problems:**
+- The need to always assign fields in the inspector.
+- Unity doesn't support displaying C# interfaces in the Inspector (Interfaces are not serializable).
+
+There is an attempt at a solution:
+```csharp
+// Cube.cs
+using UnityEngine;
+
+public class Cube : MonoBehaviour
+{
+    // The dependency that provides an implementation of the rotating system.
+    private IRotate m_RotateSystem;
+    
+    private void Awake()
+    {
+        /* Just create a new instance (if a class doesn't inherit from MonoBehaviour)
+           and pass the 'Cube' class instance through the constructor: */
+        // m_RotateSystem = new Rotate(this);
+        
+        /* otherwise find a component like this: */
+        // m_RotateSystem = GetComponentInParent<Rotate>();
+        
+        // or
+        // m_RotateSystem = FindObjectOfType<Rotate>();
+    }
+    
+    private void Update()
+    {
+        m_RotateSystem.DoRotate(0, 0.25f, 0);
+    }
+}
+```
+**This is a workable solution, but it has some disadvantages:**
+- When a class holds its dependencies and tries to manage them itself without any interference from others, it's an anti-pattern named *Control Freak*.
+- The need to manually write in the source code of each component. 
+- Extending and maintaining the classes in your project will take a lot more effort.
+
+So let's try dependency injection using any other existing IOC/DI framework for Unity game engine:
+```csharp
+// Cube.cs
+using UnityEngine;
+using AnyOtherDIFramework;
+
+public class Cube : MonoBehaviour
+{
+    // The dependency that provides an implementation of the rotating system.
+    [Inject]
+    private IRotate m_RotateSystem;
+    
+    private void Update()
+    {
+        m_RotateSystem.DoRotate(0, 0.25f, 0);
+    }
+}
+```
+**It's almost perfect, but there is a snag:**
+- The need to add a Using directive to the source code of your project (using AnyOtherDIFramework; in this case).
+- The need to manually write attributes in the source code of each component.
+- As in the previous solution, extending and maintaining the classes in your project will take a lot more effort.
+- *Cube* class indirectly begins to know where it gets its dependency from.
+
+**EaseJection was created to solve exactly this problems:**
+<table>
+<tr><td>Source code of the project <b>without</b> <code>using EasyJection;</code> directive.</td></tr>
+<tr><td>
+<details>
+ <summary>Cube.cs</summary>
+ 
+ ```csharp
+// Cube.cs
+using UnityEngine;
+
+public class Cube : MonoBehaviour
+{
+    private IRotate m_RotateSystem;
+
+    private void Awake() { }
+
+    private void Update()
+    {
+        m_RotateSystem.DoRotate(0, 0.25f, 0);
+    }
+}
+```
+</details>
+</td></tr>
+<tr><td>
+<details>
+ <summary>IRotate.cs</summary>
+ 
+ ```csharp
+// IRotate.cs
+using UnityEngine;
+
+public interface IRotate
+{
+    void DoRotate(float x, float y, float z);
+}
+```
+</details>
+</td></tr>
+<tr><td>
+<details>
+ <summary>Rotate.cs</summary>
+ 
+ ```csharp
+// Rotate.cs
+using UnityEngine;
+
+public class Rotate : IRotate
+{
+    private Cube m_Cube;
+
+    public void DoRotate(float x, float y, float z)
+    {
+        m_Cube.transform.Rotate(x, y, z);
+    }
+}
+```
+</details>
+</td></tr>
+</table>
+
+<table>
+<tr><td>Source code <b>with</b> <code>using EasyJection;</code> directive.</td></tr>
+<tr><td>
+<details>
+ <summary>EntryPoint.cs</summary>
+ 
+ ```csharp
+// EntryPoint.cs
+using UnityEngine;
+using EasyJection;
+
+public class EntryPoint
+{
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    /* The Unity documentation mention that the order might be undefined 
+       depending on platform, not sure what that means for actual usage.
+ 
+       Methods with RuntimeInitializeLoadType.AfterSceneLoad, or RuntimeInitializeLoadType.BeforeSceneLoad 
+       will only be called for the first scene in a run of the application, not every scene. */
+    static void OnBeforeSceneLoadRuntimeMethod()
+    {
+        Container container = new Container();
+        container.Binder.Bind<IRotate>().To<Rotate>();
+        container.Binder.Bind<Cube>().ToSelf().ConstructionMethod("Awake");
+        container.ResolveAll();
+    }
+}
+``` 
+</details>
+</td></tr>
+</table>
+
+<details>
+ <summary>Attaching the script to the game object</summary>
+</details>
+ 
+<details>
+ <summary>Result</summary>
+</details>
 
 ## 🛠 Installation ##
 
@@ -124,12 +305,12 @@ container.Binder.Bind<ISomeInterface>().To<SomeClass>().AsSingle();
 container.Binder.Bind<SomeClass>().ToSelf();
 ```
 #### Conditions ####
-If you don’t provide a constructor for your class, a new instance is created using the default constructor `new()`, C# creates one and sets member variables to the default values. `Note that a value type (C# struct ) can't have a constructor with no parameters.` Otherwise you can specify a constructor to use to instantiate your type, this is possible in several ways:
+If you don’t provide a constructor for your class, a new instance is created using the default constructor `new()`, C# creates one and sets member variables to the default values. But if you decide to create an instance through `new()` (with or without arguments) you need to provide a constructor with `[MethodImpl(MethodImplOptions.NoInlining)]` attribute. `Note that a value type (C# struct) can't have a constructor with no parameters.` Otherwise you can specify a constructor to use to instantiate your type, this is possible in several ways:
 ##### Passing values to a constructor #####
 ```csharp
 // A ValueType constructor with 3 arguments (parameters). The maximum number of parameters is 9.
 // Instances will be created with the specified argument values
-container.Binder.Bind<Vector3>().ToSelf().ConstructionMethod().WithArguments<int, int, int>(4, 2, 3);
+container.Binder.Bind<Vector2>().ToSelf().ConstructionMethod().WithArguments<int, int>(4, 2);
 // or
 container.Binder.Bind<ISomeInterface>().To<SomeClass>().ConstructionMethod().WithArguments(new object[]{ "Some Text", 2021 });
 ```
@@ -138,55 +319,100 @@ You can pass NULL as a constructor parameter if the specific parameter is a refe
 // A ValueType constructor with 3 arguments (parameters). The maximum number of parameters is 9.
 // Instances will be created with the specified argument values
 // The injection will be done into constructor parameters
-container.Binder.Bind<ISomeInterface>().To<SomeClass>()
-                .ConstructionMethod().WithArguments<IArgumentInterface, string, int>(null, "Some Text", 2021);
+container.Binder.Bind<ISomeInterface>()
+                .To<SomeClass>()
+                .ConstructionMethod()
+                .WithArguments<IArgumentInterface, string, int>(null, "Some Text", 2021);
 ```
 ##### Without passing values to a constructor #####
 A function/method signature include parameters and their types.
 ```csharp
 // Constructor with 1 argument (parameter). The maximum number of parameters is 9
-// The injection will be done into constructor parameters
-container.Binder.Bind<ISomeInterface>().To<SomeClass>().ConstructionMethod().Signature<Vector2>();
+// The injection will be done into constructor.
+container.Binder.Bind<ISomeInterface>()
+                .To<SomeClass>()
+                .ConstructionMethod()
+                .Signature<Vector2>();
 ```
-By the name of the method that is used as the constructor. The injection will be done into an instance when this method is called. With the way Unity works, you're supposed to use *Awake()* and *Start()* to handle initialization behavior.
+```csharp
+// Same as the above code
+container.Binder.Bind<ISomeInterface>()
+                .To<SomeClass>()
+                .Signature<Vector2>();
+```
+By the name of the method that is used as the constructor. The injection will be done into an instance when this method is called. With the way Unity works, you're supposed to use *Awake()* and *Start()* instead of a constructor to handle initialization behavior.
 ```csharp
 // A Method named "Awake"
-container.Binder.Bind<MonoBehaviourGameObject>().ToSelf().ConstructionMethod("Awake");
+container.Binder.Bind<MonoBehaviourGameObject>()
+                .ToSelf()
+                .ConstructionMethod("Awake");
 ```
 ### Injection ###
-#### Injection directly ####
+#### Injection via Constructor ####
 ```csharp
-// An instance of a type that requires dependency injection
-AppClass app = new AppClass();
-// Injection
-container.Inject(app);
-....
+// The class whose instance requires dependency injection
 public class AppClass
 {
-    // Property injection occurs immediately after the constructor method is called
+    // The property is set immediately when the constructor method is called.
     private ISomeInterface m_someDependence;
-    ...
+    
+    // ❗❗❗ Specifies that the method cannot be inlined.
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public AppClass() { }
 }
 ```
-#### Injection via hook  ####
 ```csharp
-// Adding a constructor by name to the binding
-container.Binder.Bind<AppClass>().ToSelf().ConstructionMethod("Awake");
-// An instance of a type that requires dependency injection
+// By default, injection into a class instance is done when the constructor is called.
+container.Binder.Bind<AppClass>().ToSelf();
+container.ResolveAll();
+```
+```csharp
+// The instance of App type that requires dependency injection.
 AppClass app = new AppClass();
-// Calling the method
-app.Awake();
-....
+```
+#### Injection via the Hook method  ####
+```csharp
+// The class whose instance requires dependency injection
 public class AppClass
 {
-    // Property injection occurs immediately after the method named "Awake" is called
+    // The property is set immediately when the "Awake" method is called.
     private ISomeInterface m_someDependence;
     // Almost like in MonoBehaviour ;)
-    private void Awake()
+    public void Awake()
     {
      ...
     }
 }
+```
+```csharp
+// Specifies the name of the method performs the injection when its called.
+container.Binder.Bind<AppClass>().ToSelf().ConstructionMethod("Awake");
+container.ResolveAll();
+```
+```csharp
+// The instance of App type that requires dependency injection.
+AppClass app = new AppClass();
+// Calling the method
+app.Awake();
+```
+#### Manually Injection ####
+```csharp
+public class AppClass
+{
+    // The property is set immediately when calling DI.Inject
+    private ISomeInterface m_someDependence;
+}
+```
+```csharp
+// By default, injection into a class instance is done when the constructor is called.
+container.Binder.Bind<AppClass>().ToSelf().ManualInjectionOnly();
+container.ResolveAll();
+```
+```csharp
+// The instance of App type that requires dependency injection
+AppClass app = new AppClass();
+// Injection
+container.DI.Inject(app);
 ```
 
 ## 💾 Change Log ##
