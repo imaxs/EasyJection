@@ -8,7 +8,7 @@
 
 ✅ | <code><b>Quick and easy setup to get started</b></code>
 :---: | :---
-✅ | <code><b>Without using attributes</b></code>
+✅ | <code><b>Without using attributes</b> <i>(makes your project less dependent on this solution)</i></code>
 ✅ | <code><b>There is no need to add a Using directive to each project file that uses DI</b></code>
 ✅ | <code><b>Allows for much more flexible, reusable, and encapsulated code to be written</b></code>
 
@@ -65,6 +65,8 @@ Unfortunately the Unity game engine isn't very SOLID-friendly out of the box. Ev
   * Context Aware Injection Support *(dependencies can be automatically injected using the components contained in the child and parents)*
 
 ## 💡 Motivation ##
+Allow references to high-level objects (typically managers or services) at a single entry point without using singletons or spaghetti serialization, or endless constructor parameters.
+
 Usually, when developing a project in Unity, it's often necessary for one system of the game object to reference another. For example, a game object needs a reference to a movement component. It might look like below:
 
 ```csharp
