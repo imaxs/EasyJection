@@ -29,7 +29,7 @@
 ## 📝 Introduction ##
 #### What is this? ####
 EasyJection is an easy-to-use Dependency Injection (DI) Framework for *C#(.Net)* and *Unity* projects.<br/>
-The framework implements dependency injection **without** using attributes. Such an implementation avoids tying your project code with the code of the framework itself and you can start using the framework without manipulating any part of your project code.
+The framework implements dependency injection **without** using attributes. Such an implementation avoids tying your project code to the  framework. You can start using the framework without having to manipulate each part of your project's code. 
 > *Since when the attributes (as well as the namespace) are used in your project's class code, that class, at least indirectly, begins to know about where it gets its dependency from.*
 
 This project is open source.
