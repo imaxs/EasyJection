@@ -67,7 +67,9 @@ Unfortunately the Unity game engine isn't very SOLID-friendly out of the box. Ev
 ## 💡 Motivation ##
 Allow references to high-level objects (typically managers or services) at a single entry point without using singletons or spaghetti serialization, or endless constructor parameters.
 
-Usually, when developing a project in Unity, it's often necessary for one system of the game object to reference another. For example, a game object needs a reference to a movement component. It might look like below:
+Usually, when developing a project in Unity, it's often necessary for one system of the game object to reference another. For example, a game object needs a reference to a movement component. 
+
+⬇️ It might look like below:
 
 ```csharp
 // Cube.cs
@@ -85,11 +87,11 @@ public class Cube : MonoBehaviour
     }
 }
 ```
-**➡️ This approach has some problems:**
+*➡️ This approach has some problems:*
 - ❌ The need to always assign fields in the inspector.
 - ❌ Unity doesn't support displaying C# interfaces in the Inspector (Interfaces are not serializable).
 
-There is an attempt at a solution:
+⬇️ There is an attempt at a solution:
 <table><tr><td><details>
  <summary>📃 Cube.cs</summary>
  
@@ -127,12 +129,12 @@ public class Cube : MonoBehaviour
 ```
 </details></td></tr></table>
 
-**➡️ Each of these ways is a workable solution, but they all have same disadvantages:**
+*➡️ Each of these ways is a workable solution, but they all have same disadvantages:*
 - ❌ When a class holds its dependencies and tries to manage them itself without any interference from others, it's an anti-pattern named *Control Freak*.
 - ❌ The need to manually write in the source code of each component. 
 - ❌ Extending and maintaining the classes in your project will take a lot more effort.
 
-We can try to solve the disadvantages described above by using any other popular IOC / DI framework for the Unity game engine:
+⬇️ We can try to solve the disadvantages described above by using any other popular IOC / DI framework for the Unity game engine:
 <table><tr><td><details>
  <summary>📃 Cube.cs</summary>
  
@@ -155,7 +157,7 @@ public class Cube : MonoBehaviour
 ```
 </details></td></tr></table>
 
-**➡️ It's almost perfect, but there are some snags:**
+*➡️ It's almost perfect, but there are some snags:*
 - ❌ The need to add the Using directive to each source code file of our project (`using AnyOtherDIFramework;` in this case).
 - ❌ The need to manually write attributes in the source code of each component.
 - ❌ As in the previous solution, extending and maintaining the classes in your project will take a lot more effort.
