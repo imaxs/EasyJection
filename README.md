@@ -85,11 +85,14 @@ public class Cube : MonoBehaviour
     }
 }
 ```
-**This approach has some problems:**
-- The need to always assign fields in the inspector.
-- Unity doesn't support displaying C# interfaces in the Inspector (Interfaces are not serializable).
+**➡️ This approach has some problems:**
+- ❌ The need to always assign fields in the inspector.
+- ❌ Unity doesn't support displaying C# interfaces in the Inspector (Interfaces are not serializable).
 
 There is an attempt at a solution:
+<table><tr><td><details>
+ <summary>📃 Cube.cs</summary>
+ 
 ```csharp
 // Cube.cs
 using UnityEngine;
@@ -101,15 +104,19 @@ public class Cube : MonoBehaviour
     
     private void Awake()
     {
+        ////////////////////////////////////////////////
+        // Below are 3 ways to resolve the dependency.
+        ////////////////////////////////////////////////
+        
         /* Just create a new instance (if a class doesn't inherit from MonoBehaviour)
            and pass the 'Cube' class instance through the constructor: */
-        // m_RotateSystem = new Rotate(this);
+        m_RotateSystem = new Rotate(this); // #1
         
         /* otherwise find a component like this: */
-        // m_RotateSystem = GetComponentInParent<Rotate>();
+        m_RotateSystem = GetComponentInParent<Rotate>(); // #2
         
         // or
-        // m_RotateSystem = FindObjectOfType<Rotate>();
+        m_RotateSystem = FindObjectOfType<Rotate>(); // #3
     }
     
     private void Update()
@@ -118,16 +125,21 @@ public class Cube : MonoBehaviour
     }
 }
 ```
-**This is a workable solution, but it has some disadvantages:**
-- When a class holds its dependencies and tries to manage them itself without any interference from others, it's an anti-pattern named *Control Freak*.
-- The need to manually write in the source code of each component. 
-- Extending and maintaining the classes in your project will take a lot more effort.
+</details></td></tr></table>
 
-So let's try dependency injection using any other existing IOC/DI framework for Unity game engine:
+**➡️ Each of these ways is a workable solution, but they all have same disadvantages:**
+- ❌ When a class holds its dependencies and tries to manage them itself without any interference from others, it's an anti-pattern named *Control Freak*.
+- ❌ The need to manually write in the source code of each component. 
+- ❌ Extending and maintaining the classes in your project will take a lot more effort.
+
+We can try to solve the disadvantages described above by using any other popular IOC / DI framework for the Unity game engine:
+<table><tr><td><details>
+ <summary>📃 Cube.cs</summary>
+ 
 ```csharp
 // Cube.cs
 using UnityEngine;
-using AnyOtherDIFramework;
+using AnyOtherDIFramework; // adds the namespace of the framework to the source code of our project
 
 public class Cube : MonoBehaviour
 {
@@ -141,18 +153,23 @@ public class Cube : MonoBehaviour
     }
 }
 ```
-**It's almost perfect, but there is a snag:**
-- The need to add a Using directive to the source code of your project (using AnyOtherDIFramework; in this case).
-- The need to manually write attributes in the source code of each component.
-- As in the previous solution, extending and maintaining the classes in your project will take a lot more effort.
-- *Cube* class indirectly begins to know where it gets its dependency from.
+</details></td></tr></table>
 
-**EaseJection was created to solve exactly these problems:**
+**➡️ It's almost perfect, but there are some snags:**
+- ❌ The need to add the Using directive to each source code file of our project (`using AnyOtherDIFramework;` in this case).
+- ❌ The need to manually write attributes in the source code of each component.
+- ❌ As in the previous solution, extending and maintaining the classes in your project will take a lot more effort.
+- ❌ The *Cube* class indirectly begins to know where it gets its dependency from.
+
+**✅ EaseJection was created to solve exactly these problems:**
+
+ℹ️ In order to start using this framework, you <ins>don't</ins> need to add `using EasyJection;` to each source code file, and also <ins>don't</ins> need to specify any attributes.
+
 <table>
-<tr><td>Source code of the project <b>without</b> <code>using EasyJection;</code> directive.</td></tr>
+<tr><td>The source files of project are neat and don't contain dependencies on third-party frameworks. (<b>without</b> `using EasyJection;` etc.)</td></tr>
 <tr><td>
 <details>
- <summary>Cube.cs</summary>
+ <summary>📃 Cube.cs</summary>
  
  ```csharp
 // Cube.cs
@@ -175,7 +192,7 @@ public class Cube : MonoBehaviour
 </td></tr>
 <tr><td>
 <details>
- <summary>IRotate.cs</summary>
+ <summary>📃 IRotate.cs</summary>
  
  ```csharp
 // IRotate.cs
@@ -190,7 +207,7 @@ public interface IRotate
 </td></tr>
 <tr><td>
 <details>
- <summary>Rotate.cs</summary>
+ <summary>📃 Rotate.cs</summary>
  
  ```csharp
 // Rotate.cs
@@ -214,7 +231,7 @@ public class Rotate : IRotate
 <tr><td>Source code <b>with</b> <code>using EasyJection;</code> directive.</td></tr>
 <tr><td>
 <details>
- <summary>EntryPoint.cs</summary>
+ <summary>📃 EntryPoint.cs</summary>
  
  ```csharp
 // EntryPoint.cs
@@ -271,7 +288,7 @@ As you can see, the framework does all the work of resolving the dependencies.
 <tr><td>
 <code>Removed Awake () method</code>
 <details>
- <summary>Cube.cs</summary>
+ <summary>📃 Cube.cs</summary>
  
  ```csharp
 // Cube.cs
@@ -292,7 +309,7 @@ public class Cube : MonoBehaviour
 <tr><td>
 <code>no change</code>
 <details>
- <summary>IRotate.cs</summary>
+ <summary>📃 IRotate.cs</summary>
  
  ```csharp
 // IRotate.cs
@@ -308,7 +325,7 @@ public interface IRotate
 <tr><td>
 <code>no change</code>
 <details>
- <summary>Rotate.cs</summary>
+ <summary>📃 Rotate.cs</summary>
  
  ```csharp
 // Rotate.cs
@@ -333,7 +350,7 @@ public class Rotate : IRotate
 <tr><td>
 <code>Changed a binding for 'Cube' type with injection via the default constructor</code>
 <details>
- <summary>EntryPoint.cs</summary>
+ <summary>📃 EntryPoint.cs</summary>
  
  ```csharp
 // EntryPoint.cs
