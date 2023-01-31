@@ -532,7 +532,7 @@ public class AppClass
     // The property is set immediately when the constructor method is called.
     private ISomeInterface m_someDependence;
     
-    // ❗❗❗ Specifies that the method cannot be inlined.
+    // ⚠️Specifies that the method cannot be inlined.
     [MethodImpl(MethodImplOptions.NoInlining)]
     public AppClass() { }
 }
