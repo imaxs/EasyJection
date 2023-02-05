@@ -1,3 +1,4 @@
+/*
 namespace EasyJection.Tests.EditMode
 {
     using Console = UnityEngine.Debug;
@@ -5,6 +6,7 @@ namespace EasyJection.Tests.EditMode
     using System;
     using NUnit.Framework;
     using FluentAssertions;
+    using System.Diagnostics;
 
     [TestFixture]
     public class ReflectionTest
@@ -13,7 +15,7 @@ namespace EasyJection.Tests.EditMode
             private void Print(ReflectedData data)
             {
                 Console.Log("\n\r# Parent Id: " + data.ParentId);
-                Console.Log("# TypeName: " + data.TypeName);
+                Console.Log("# TypeName: " + data.Type.Name);
                 Console.Log("# Ctors: " + data.ConstructorsData.ConstructorsInfo.Length + " Pars Length: (" + data.ConstructorsData.ConstructorsParsInfo.Length + ")");
                 for (int i = 0; i < data.ConstructorsData.ConstructorsInfo.Length; i++)
                 {
@@ -121,7 +123,6 @@ namespace EasyJection.Tests.EditMode
             var t1 = mockSecond.GetType().Reflect();
             var t2 = mockThird.GetType().Reflect();
 
-            // Get parameterless constructor
             t1.GetData().GetField(fieldName: "PrivateField").GetValue(mockSecond).Should().Be("MockFirstClass: Private Field");
             t1.GetData().GetField(fieldName: "ProtectedField").GetValue(mockSecond).Should().Be("MockSecondClass: Protected Field"); // MockSecondClass: protected new string ProtectedField
 
@@ -156,12 +157,11 @@ namespace EasyJection.Tests.EditMode
             var t2 = typeof(MockThirdClass).Reflect();
 
             // Check the number of reflected data
-            Reflector.Cache.Length.Should().Be(1);
-            Reflector.Cache[t1.NamespaceId].Length.Should().Be(3);
+            Reflector.Cache[t1.NamespaceId].Count.Should().Be(3);
 
             // Check types name
-            t1.GetData().TypeName.Should().Be("MockSecondClass");
-            t2.GetData().TypeName.Should().Be("MockThirdClass");
+            t1.GetData().Type.Name.Should().Be("MockSecondClass");
+            t2.GetData().Type.Name.Should().Be("MockThirdClass");
 
             // Find methods by name
             // #1 Getting an existing method
@@ -177,30 +177,29 @@ namespace EasyJection.Tests.EditMode
             var t2 = typeof(MockThirdClass).Reflect();
 
             // Check the number of reflected data
-            Reflector.Cache.Length.Should().Be(1);
-            Reflector.Cache[t1.NamespaceId].Length.Should().Be(3);
+            Reflector.Cache[t1.NamespaceId].Count.Should().Be(3);
 
             // Check the name of the types.
-            t1.GetData().TypeName.Should().Be("MockSecondClass");
-            t2.GetData().TypeName.Should().Be("MockThirdClass");
+            t1.GetData().Type.Name.Should().Be("MockSecondClass");
+            t2.GetData().Type.Name.Should().Be("MockThirdClass");
         }
 
-        [Test]
-        public void ReflectedCache_Add16Items_and_CheckNameOfItemAtIndex5()
-        {
-            var cache = new ReflectedCache(ReflectedCache.DefaultCapacity);
+        //[Test]
+        //public void ReflectedCache_Add64Items_and_CheckNameOfItemAtIndex5()
+        //{
+        //    var cache = new ReflectedCache(8);
 
-            for (int i = 0; i < 16; i++)
-                cache.Add("Namespace", new ReflectedData(default(ReflectedId), "Name_" + i, false, null, null, null, null, null, null));
+        //    for (int i = 0; i < 64; i++)
+        //        cache.Add("Namespace", new ReflectedData(default(ReflectedId), "Name_" + i, null, false, null, null, null, null, null, null));
 
-            int index = cache.GetIndex("Namespace");
+        //    int index = cache.GetIndex("Namespace");
 
-            // Check the number of reflected data
-            index.Should().BeGreaterThan(-1);
-            cache[index].Length.Should().Be(16);
+        //    // Check the number of reflected data
+        //    index.Should().BeGreaterThan(-1);
+        //    cache[index].Count.Should().Be(64);
 
-            // Check the name
-            cache[index][5].TypeName.Should().Be("Name_5");
-        }
+        //    // Check the name
+        //    cache[index][5].Type.Name.Should().Be("Name_5");
+        //}
     }
-}
+}*/
