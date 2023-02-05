@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0-alpha] - 2023-02-05
+  - New framework architecture.
+  - Documentation expanded.
+
 ## [0.1.0] - 2021-08-11
   - Initial release
 ### Added
