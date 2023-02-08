@@ -21,8 +21,10 @@ using System;
 using System.Collections.Generic;
 
 namespace EasyJection.Hooking
-{  
-    public class HookContainer : IHookContainer
+{
+    using Types;
+
+    public class HookContainer : Disposable, IHookContainer
     {
         protected IDictionary<Type, IList<IHookedMethod>> dict;
 
@@ -44,6 +46,18 @@ namespace EasyJection.Hooking
                 dict.Add(key, new List<IHookedMethod>() { hookMethod });
             else
                 list.Add(hookMethod);
+        }
+
+        protected override void Remove()
+        {
+            foreach (var list in this.dict)
+            {
+                foreach (var mh in list.Value)
+                    mh.Dispose();
+
+                list.Value.Clear();
+            }
+            this.dict.Clear();
         }
     }
 }

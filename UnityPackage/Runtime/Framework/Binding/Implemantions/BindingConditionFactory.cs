@@ -29,7 +29,7 @@ namespace EasyJection.Binding
         /// <summary>
         /// Initializes a new instance of the <see cref="BindingConditionFactory"/> class.
         /// </summary>
-        /// <param name="binding">The binding to have its conditions settled.</param>
+        /// <param name="binding">The binding data.</param>
         public BindingConditionFactory(IBindingData binding)
         {
             this.binding = binding;

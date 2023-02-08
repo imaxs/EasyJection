@@ -18,11 +18,10 @@
  */
 
 using System;
-using System.Reflection;
 
 namespace EasyJection.Hooking
 {
-    public interface IHookedMethod
+    public interface IHookedMethod : IDisposable
     {
         IHookManager HookManager { get; }
     }

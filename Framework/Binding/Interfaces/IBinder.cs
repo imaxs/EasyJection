@@ -17,6 +17,7 @@
  * limitations under the License.
  */
 
+using EasyJection.Resolving;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -26,7 +27,6 @@ namespace EasyJection.Binding
     #region Comment
     /// <summary>
     /// Inherits <see cref="IBindCreator"/><br/>
-    /// <inheritdoc/>
     /// Contains the definitions of a binder that binds a type to an implementation type or instance.
     /// <para>Methods:</para>
     /// <list type="bullet">
@@ -110,5 +110,28 @@ namespace EasyJection.Binding
         /// <returns><c>true</c>, if binding was contained, <c>false</c> otherwise.</returns>
         #endregion
         bool ContainsBindingFor(Type type);
+
+        #region Comment
+        /// <summary>
+        /// Cancels any bindings to a specific <typeparamref name="T"/> type.
+        /// </summary>
+        /// <typeparam name="T">The type that should be canceled.</typeparam>
+        #endregion
+        void Cancel<T>();
+
+        #region Comment
+        /// <summary>
+        /// Cancels any bindings to a specific <paramref name="type"/>.
+        /// </summary>
+        /// <param name="type">The type that should be canceled.</param>
+        #endregion
+        void Cancel(Type type);
+
+        #region Comment
+        /// <summary>
+        /// Cancels all bindings.
+        /// </summary>
+        #endregion
+        void CancelAll();
     }
 }

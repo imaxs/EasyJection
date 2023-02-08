@@ -3,8 +3,7 @@
     using Console = UnityEngine.Debug;
 
     using NUnit.Framework;
-    using EasyJection.Resolving.Extensions;
-    using EasyJection.Reflection;
+    using System;
 
     [TestFixture]
     public class ContainerTests
@@ -20,7 +19,9 @@
             var mock = new MockClassBasic();
             container.Inject(mock);
 
-            Assert.IsTrue(mock.field != null);
+            Assert.NotNull(mock.field);
+
+            container.Clear();
         }
 
         [Test]
@@ -34,8 +35,10 @@
             var mock = new MockClassBasicProperty();
             container.Inject(mock);
 
-            Assert.IsTrue(mock.property != null);
+            Assert.NotNull(mock.property);
             Assert.AreEqual((int)TestValue.PublicProperty, mock.property.PublicProperty);
+
+            container.Clear();
         }
 
         [Test]
@@ -50,9 +53,11 @@
             var mock = new MockClassBasicConstruct();
             container.Inject(mock);
 
-            Assert.IsTrue(mock.Field != null);
+            Assert.NotNull(mock.Field);
             Assert.IsTrue(mock.Field.BoolValue);
             Assert.IsTrue(mock.Field.IntValue == 999);
+
+            container.Clear();
         }
 
         [Test]
@@ -67,9 +72,11 @@
             var mock = new MockClassBasicConstruct();
             container.Inject(mock);
 
-            Assert.IsTrue(mock.Field != null);
+            Assert.NotNull(mock.Field);
             Assert.IsTrue(mock.Field.BoolValue);
             Assert.AreEqual((int)TestValue.IntValueThroughDefaultConstructor, mock.Field.IntValue);
+
+            container.Clear();
         }
 
         [Test]
@@ -84,9 +91,11 @@
             var mock = new MockClassBasicConstruct();
             container.Inject(mock);
 
-            Assert.IsTrue(mock.Field != null);
+            Assert.NotNull(mock.Field);
             Assert.IsTrue(mock.Field.BoolValue);
             Assert.AreEqual((int)TestValue.IntValueThroughDefaultConstructor, mock.Field.IntValue);
+
+            container.Clear();
         }
 
         [Test]
@@ -99,9 +108,11 @@
             var mock = new MockClassBasicConstruct();
             container.Inject(mock);
 
-            Assert.IsTrue(mock.Field != null);
+            Assert.NotNull(mock.Field);
             Assert.IsTrue(mock.Field.BoolValue);
             Assert.AreEqual((int)TestValue.IntValueThroughDefaultConstructor, mock.Field.IntValue);
+
+            container.Clear();
         }
 
         [Test]
@@ -118,9 +129,18 @@
             var mock = new MockClassConstruct();
             container.Inject(mock);
 
-            Assert.IsTrue(mock.Instance != null);
+            Assert.NotNull(mock.Instance);
             Assert.IsTrue(mock.BoolValue);
             Assert.AreEqual(999, mock.IntValue);
+
+            container.Clear();
+        }
+
+        [OneTimeTearDown]
+        public void TearDown()
+        {
+            Container.Reset();
+            GC.Collect();
         }
     }
 }

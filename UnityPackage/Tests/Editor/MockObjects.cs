@@ -1,4 +1,7 @@
-﻿using System.Runtime.CompilerServices;
+﻿using EasyJection.Binding;
+using EasyJection.Resolving;
+using System;
+using System.Runtime.CompilerServices;
 
 namespace EasyJection.Tests.EditMode
 {
@@ -147,7 +150,7 @@ namespace EasyJection.Tests.EditMode
 
     public class HeirMockClassFactory : Types.IFactory
     {
-        public object CreateInstance()
+        public object CreateInstance(IBindingData bindingData = null)
         {
             return new HeirMockClass();
         }
@@ -215,6 +218,31 @@ namespace EasyJection.Tests.EditMode
                 );
         }
 
+        public class OriginalMethod_1
+        {
+            private string name;
+            private int number;
+
+            public OriginalMethod_1()
+                : this(null, 0)
+            { }
+
+            public OriginalMethod_1(string name, int number)
+            {
+                this.name = name;
+                this.number = number;
+            }
+
+            public int GetNumber(int number)
+            {
+                UnityEngine.Debug.Log(
+                "ORIGINAL METHOD (GetNumber): " + this.GetType().Name + "\t" +
+                "ARGUMENT INT VALUE: " + number
+                );
+                return number;
+            }
+        }
+
         public class OriginalMethod_2
         {
             private string name;
@@ -280,6 +308,75 @@ namespace EasyJection.Tests.EditMode
                 "ARGUMENT INT VALUE: " + number
                 );
                 return number;
+            }
+        }
+
+        public class Resolver_1 : IResolver
+        {
+            public void Inject(object instance)
+            {
+                throw new NotImplementedException();
+            }
+
+            public T Resolve<T>()
+            {
+                throw new NotImplementedException();
+            }
+
+            public object Resolve(Type type)
+            {
+                throw new NotImplementedException();
+            }
+
+            public object[] Resolve(object[] objects, Type[] types)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public class Resolver_2 : IResolver
+        {
+            public void Inject(object instance)
+            {
+                throw new NotImplementedException();
+            }
+
+            public T Resolve<T>()
+            {
+                throw new NotImplementedException();
+            }
+
+            public object Resolve(Type type)
+            {
+                throw new NotImplementedException();
+            }
+
+            public object[] Resolve(object[] objects, Type[] types)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public class Resolver_3 : IResolver
+        {
+            public void Inject(object instance)
+            {
+                throw new NotImplementedException();
+            }
+
+            public T Resolve<T>()
+            {
+                throw new NotImplementedException();
+            }
+
+            public object Resolve(Type type)
+            {
+                throw new NotImplementedException();
+            }
+
+            public object[] Resolve(object[] objects, Type[] types)
+            {
+                throw new NotImplementedException();
             }
         }
     }

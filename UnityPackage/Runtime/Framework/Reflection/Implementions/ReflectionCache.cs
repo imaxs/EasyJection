@@ -32,13 +32,14 @@ namespace EasyJection.Reflection
         public IReflectionFactory reflectionFactory { get; set; }
 
         /// <summary>Reflected objects on the cache.</summary>
-        private Dictionary<Type, IReflectedData> reflects = new Dictionary<Type, IReflectedData>();
+        private Dictionary<Type, IReflectedData> reflects;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReflectionCache"/> class.
         /// </summary>
         public ReflectionCache()
         {
+            this.reflects = new Dictionary<Type, IReflectedData>();
             this.reflectionFactory = this.ReflectionFactoryProvider();
         }
 
@@ -89,6 +90,14 @@ namespace EasyJection.Reflection
         protected virtual IReflectionFactory ReflectionFactoryProvider()
         {
             return new ReflectionFactory();
+        }
+
+        public void Clear()
+        {
+            foreach(var d in this.reflects)
+                d.Value.Dispose();
+
+            this.reflects.Clear();
         }
     }
 }

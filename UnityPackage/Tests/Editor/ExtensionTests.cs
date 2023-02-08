@@ -55,5 +55,12 @@
             var ctor = typeof(OriginalMethod).FindMethodResultByNameWithArguments<int, int>("GetNumber");
             Assert.IsNotNull(ctor);
         }
+
+        [OneTimeTearDown]
+        public void TearDown()
+        {
+            Container.Reset();
+            GC.Collect();
+        }
     }
 }

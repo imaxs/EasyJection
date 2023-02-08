@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-using System.Reflection;
+using System;
 
 namespace EasyJection.Reflection
 {
@@ -37,7 +37,7 @@ namespace EasyJection.Reflection
     /// </list>
     /// </summary>
     #endregion
-    public interface IConstructorsData
+    public interface IConstructorsData : IDisposable
     {
         /// <summary>The array of objects representing information about constructors.</summary>
         ConstructorInfo[] ConstructorsInfo { get; }

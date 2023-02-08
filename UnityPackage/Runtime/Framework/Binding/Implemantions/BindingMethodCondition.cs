@@ -18,14 +18,15 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Reflection;
 
 namespace EasyJection.Binding
 {
     using EasyJection.Utils;
-    using Extensions;
     using Hooking;
+
+    /// <summary>
+    /// Implementation of the <see cref="IBindingMethodCondition"/> interface
+    /// </summary>
     public class BindingMethodCondition : IBindingMethodCondition
     {
         protected IBindingInjectionCondition injectionCondition;

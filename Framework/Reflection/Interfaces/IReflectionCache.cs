@@ -62,5 +62,10 @@ namespace EasyJection.Reflection
         /// <param name="type">Type to be removed.</param>
         /// <returns>True or False</returns>
         bool Contains(Type type);
+
+        /// <summary>
+        /// Clear cache
+        /// </summary>
+        void Clear();
     }
 }

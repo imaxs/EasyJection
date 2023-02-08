@@ -17,15 +17,18 @@
  * limitations under the License.
  */
 
-using EasyJection.Binding;
-using System;
-using System.Reflection;
-
 namespace EasyJection.Hooking
 {
-    public class HookedMethodBase : IHookedMethod
+    using Types;
+
+    public class HookedMethodBase : Disposable, IHookedMethod
     {
         protected IHookManager hookManager;
         public IHookManager HookManager { get => hookManager; }
+
+        protected override void Remove()
+        {
+            this.hookManager.Dispose();
+        }
     }
 }

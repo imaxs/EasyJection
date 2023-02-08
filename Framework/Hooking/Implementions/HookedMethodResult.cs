@@ -19,11 +19,9 @@
 
 using System;
 using System.Reflection;
-using System.Collections.Generic;
 
 namespace EasyJection.Hooking
 {
-    using Binding;
     public class HookedMethodResult<TResult> : HookedMethodBase
     {
         public HookedMethodResult(IHookContainer container, MethodBase original)
@@ -53,8 +51,8 @@ namespace EasyJection.Hooking
                     }
                     break;
             }
-            hookManager = new HookManager(new MethodInvokeData(this), info, original);
             container.AddHook(type, this);
+            hookManager = new HookManager(new MethodInvokeData(this), info, original);
         }
     }
 
@@ -87,8 +85,8 @@ namespace EasyJection.Hooking
                     }
                     break;
             }
-            hookManager = new HookManager(new MethodInvokeData(this), info, original);
             container.AddHook(type, this);
+            hookManager = new HookManager(new MethodInvokeData(this), info, original);
         }
     }
 
@@ -121,8 +119,8 @@ namespace EasyJection.Hooking
                     }
                     break;
             }
-            hookManager = new HookManager(new MethodInvokeData(this), info, original);
             container.AddHook(type, this);
+            hookManager = new HookManager(new MethodInvokeData(this), info, original);
         }
     }
 
@@ -155,8 +153,8 @@ namespace EasyJection.Hooking
                     }
                     break;
             }
-            hookManager = new HookManager(new MethodInvokeData(this), info, original);
             container.AddHook(type, this);
+            hookManager = new HookManager(new MethodInvokeData(this), info, original);
         }
     }
 
@@ -189,8 +187,8 @@ namespace EasyJection.Hooking
                     }
                     break;
             }
-            hookManager = new HookManager(new MethodInvokeData(this), info, original);
             container.AddHook(type, this);
+            hookManager = new HookManager(new MethodInvokeData(this), info, original);
         }
     }
 
@@ -223,8 +221,8 @@ namespace EasyJection.Hooking
                     }
                     break;
             }
-            hookManager = new HookManager(new MethodInvokeData(this), info, original);
             container.AddHook(type, this);
+            hookManager = new HookManager(new MethodInvokeData(this), info, original);
         }
     }
 
@@ -257,8 +255,8 @@ namespace EasyJection.Hooking
                     }
                     break;
             }
-            hookManager = new HookManager(new MethodInvokeData(this), info, original);
             container.AddHook(type, this);
+            hookManager = new HookManager(new MethodInvokeData(this), info, original);
         }
     }
 
@@ -291,8 +289,8 @@ namespace EasyJection.Hooking
                     }
                     break;
             }
-            hookManager = new HookManager(new MethodInvokeData(this), info, original);
             container.AddHook(type, this);
+            hookManager = new HookManager(new MethodInvokeData(this), info, original);
         }
     }
 
@@ -325,8 +323,8 @@ namespace EasyJection.Hooking
                     }
                     break;
             }
-            hookManager = new HookManager(new MethodInvokeData(this), info, original);
             container.AddHook(type, this);
+            hookManager = new HookManager(new MethodInvokeData(this), info, original);
         }
     }
 
@@ -359,8 +357,8 @@ namespace EasyJection.Hooking
                     }
                     break;
             }
-            hookManager = new HookManager(new MethodInvokeData(this), info, original);
             container.AddHook(type, this);
+            hookManager = new HookManager(new MethodInvokeData(this), info, original);
         }
     }
 }

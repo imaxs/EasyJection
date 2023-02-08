@@ -21,7 +21,6 @@ using System;
 
 namespace EasyJection.Resolving.Extensions
 {
-    using Utils;
     using Reflection;
     using Reflection.Utils;
     

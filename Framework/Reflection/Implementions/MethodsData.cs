@@ -17,17 +17,15 @@
  * limitations under the License.
  */
 
-using System.Runtime.InteropServices;
-
 namespace EasyJection.Reflection
 {
+    using Types;
     /// <summary>
     /// Implements interface <see cref="IMethodsData"/><br/>
     /// <inheritdoc cref="IMethodsData"/>
     /// Represents the cached methods data of the reflected class.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class MethodsData : IMethodsData
+    public class MethodsData : Disposable, IMethodsData
     {
         private MethodInfo[] m_MethodsInfo;
         /// <inheritdoc cref="IMethodsData.MethodsInfo"/>
@@ -44,5 +42,11 @@ namespace EasyJection.Reflection
         }
 
         public bool IsEmpty { get => m_MethodsInfo == null || m_MethodsInfo.Length == 0; }
+
+        protected override void Remove()
+        {
+            this.m_MethodsInfo = null;
+            this.m_MethodsParsInfo = null;
+        }
     }
 }

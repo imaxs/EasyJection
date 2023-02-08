@@ -17,24 +17,15 @@
  * limitations under the License.
  */
 
-using EasyJection.Binding;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace EasyJection.Hooking
 {
-    public interface IHookManager
-    {
-        IMethodInvokeData InvokeData { get; }
-        object InvokeOriginalMethodResult(object instance, object[] originalArguments = null);
-        void InvokeOriginalMethodVoid(object instance, object[] originalArguments = null);
-        void Hook();
-        void Unhook();
-    }
+    using Types;
 
-    public sealed class HookManager : IHookManager
+    public sealed class HookManager : Disposable, IHookManager
     {
         private static class Architecture
         {
@@ -81,7 +72,7 @@ namespace EasyJection.Hooking
 
         private MethodBase originalMethod;
 
-        public HookManager(IMethodInvokeData invokeData, MethodBase hooked, MethodBase original)
+        public HookManager(IMethodInvokeData invokeData, MethodBase hooked, MethodBase original, bool HookImmediately = true)
         {
             this.bytes = new byte[Architecture.SIZE_X64];
             this.hookedMethod = hooked;
@@ -91,6 +82,8 @@ namespace EasyJection.Hooking
             RuntimeHelpers.PrepareMethod(originalMethod.MethodHandle);
             RuntimeHelpers.PrepareMethod(hookedMethod.MethodHandle);
 #endif
+            if (HookImmediately) // <-- variable disables the hook
+                this.Hook();
         }
 
         /// NOTE: If the values of the arguments for a method were specified on binding,
@@ -108,9 +101,12 @@ namespace EasyJection.Hooking
             // Call the original method and get its return value. 
             object returnValue = this.originalMethod.Invoke(instance, arguments);
 
+            // Dependencies Injection
+            Container.Instance.Inject(returnValue);
+
             // Enable the hook
             this.Hook();
-            
+
             return returnValue;
         }
 
@@ -128,6 +124,9 @@ namespace EasyJection.Hooking
 
             // Call the original method and get its return value. 
             this.originalMethod.Invoke(instance, arguments);
+
+            // Dependencies Injection
+            Container.Instance.Inject(instance);
 
             // Enable the hook
             this.Hook();
@@ -193,6 +192,11 @@ namespace EasyJection.Hooking
             }
 #endif
             this.isHooked = false;
+        }
+
+        protected override void Remove()
+        {
+            this.Unhook();
         }
     }
 

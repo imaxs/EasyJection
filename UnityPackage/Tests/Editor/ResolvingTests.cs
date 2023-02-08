@@ -7,6 +7,8 @@
     using Binding;
     using Reflection;
     using EasyJection.Resolving.Extensions;
+    using static EasyJection.Tests.EditMode.OriginalMethod;
+    using System;
 
     [TestFixture]
     public class ResolvingTests
@@ -21,8 +23,8 @@
         [SetUp]
         public void Init() 
         {
-            binder = new Binder();
             cache = new ReflectionCache();
+            binder = new Binder(cache);
             resolver = new Resolver(cache, binder);
 
             binder.Bind<IMockClassInterface>().ToSelf<MockClass>(UseDefaultConstructor: true);
@@ -64,39 +66,125 @@
         }
 
         [Test]
-        public void TestResolveByGenerics_DefaultConstructor()
+        public void TestResolverContainer_AddResolver()
         {
-            var instance = this.resolver.Resolve<IMockClassInterface>();
+            var container = new MultikeysCollection<System.Type, IResolver>();
 
-            Assert.AreEqual(typeof(MockClass), instance.GetType());
+            var resolver_1 = new Resolver_1();
+            var resolver_2 = new Resolver_2();
+            var resolver_3 = new Resolver_3();
+
+            container.AddKey(resolver_1, typeof(MockClass));
+            container.AddKey(resolver_1, typeof(OriginalMethod));
+            container.AddKey(resolver_2, typeof(OriginalMethod_2));
+            container.AddKey(resolver_3, typeof(OriginalMethod_3));
+
+            Assert.AreEqual(3, container.Count);
         }
 
         [Test]
-        public void TestResolveByType_DefaultConstructor()
+        public void TestResolverContainer_GetByType()
         {
-            var instance = this.resolver.Resolve(typeof(IMockClassInterface));
+            var container = new MultikeysCollection<System.Type, IResolver>();
 
-            Assert.AreEqual(typeof(MockClass), instance.GetType());
+            var resolver_1 = new Resolver_1();
+            var resolver_2 = new Resolver_2();
+            var resolver_3 = new Resolver_3();
+
+            container.AddKey(resolver_1, typeof(MockClass));
+            container.AddKey(resolver_1, typeof(OriginalMethod));
+            container.AddKey(resolver_2, typeof(OriginalMethod_2));
+            container.AddKey(resolver_3, typeof(OriginalMethod_3));
+
+            Assert.AreEqual(resolver_1, container[typeof(OriginalMethod)]);
+            Assert.AreEqual(resolver_1, container[typeof(MockClass)]);
+            Assert.AreEqual(resolver_2, container[typeof(OriginalMethod_2)]);
+            Assert.AreEqual(resolver_3, container[typeof(OriginalMethod_3)]);
         }
 
         [Test]
-        public void TestResolveByGenerics_ConstructorWithArguments()
+        public void TestResolverContainer_GetByIResolverInstance()
         {
-            var instance = this.resolver.Resolve<IHeirMockInterface>();
+            var container = new MultikeysCollection<System.Type, IResolver>();
 
-            Assert.AreEqual(typeof(HeirMockClass), instance.GetType());
-            Assert.AreEqual(777, instance.IntValue);
-            Assert.AreEqual(true, instance.BoolValue);
+            var resolver_1 = new Resolver_1();
+            var resolver_2 = new Resolver_2();
+            var resolver_3 = new Resolver_3();
+
+            container.AddKey(resolver_1, typeof(MockClass));
+            container.AddKey(resolver_1, typeof(OriginalMethod));
+            container.AddKey(resolver_2, typeof(OriginalMethod_2));
+            container.AddKey(resolver_3, typeof(OriginalMethod_3));
+
+            var keyval_1 = container[resolver_1];
+            var keyval_2 = container[resolver_2];
+            var keyval_3 = container[resolver_3];
+
+            Assert.NotNull(keyval_1);
+            Assert.NotNull(keyval_2);
+            Assert.NotNull(keyval_3);
+
+            Assert.IsTrue(keyval_1.Key.Contains(typeof(MockClass)));
+            Assert.IsTrue(keyval_1.Key.Contains(typeof(OriginalMethod)));
+            Assert.IsTrue(keyval_2.Key.Contains(typeof(OriginalMethod_2)));
+            Assert.IsTrue(keyval_3.Key.Contains(typeof(OriginalMethod_3)));
+
         }
 
         [Test]
-        public void TestResolveByType_ConstructorWithArguments()
+        public void TestResolverContainer_RemoveResolver()
         {
-            var instance = (IHeirMockInterface)this.resolver.Resolve(typeof(IHeirMockInterface));
+            var container = new MultikeysCollection<System.Type, IResolver>();
 
-            Assert.AreEqual(typeof(HeirMockClass), instance.GetType());
-            Assert.AreEqual(777, instance.IntValue);
-            Assert.AreEqual(true, instance.BoolValue);
+            var resolver_1 = new Resolver_1();
+            var resolver_2 = new Resolver_2();
+            var resolver_3 = new Resolver_3();
+
+            container.AddKey(resolver_1, typeof(MockClass));
+            container.AddKey(resolver_1, typeof(OriginalMethod));
+            container.AddKey(resolver_2, typeof(OriginalMethod_2));
+            container.AddKey(resolver_3, typeof(OriginalMethod_3));
+
+            container.RemoveValue(resolver_1);
+            container.RemoveValue(resolver_2);
+            container.RemoveValue(resolver_3);
+
+            Assert.IsFalse(container.Contains(resolver_1));
+            Assert.IsFalse(container.Contains(resolver_2));
+            Assert.IsFalse(container.Contains(resolver_3));
+        }
+
+        [Test]
+        public void TestResolverContainer_RemoveType()
+        {
+            var container = new MultikeysCollection<System.Type, IResolver>();
+
+            var resolver_1 = new Resolver_1();
+            var resolver_2 = new Resolver_2();
+            var resolver_3 = new Resolver_3();
+
+            container.AddKey(resolver_1, typeof(MockClass));
+            container.AddKey(resolver_1, typeof(OriginalMethod));
+            container.AddKey(resolver_2, typeof(OriginalMethod_2));
+            container.AddKey(resolver_3, typeof(OriginalMethod_3));
+
+            container.RemoveKey(typeof(MockClass));
+            container.RemoveKey(typeof(OriginalMethod));
+            container.RemoveKey(typeof(OriginalMethod_2));
+            container.RemoveKey(typeof(OriginalMethod_3));
+
+            Assert.Null(container[typeof(OriginalMethod)]);
+            Assert.Null(container[typeof(MockClass)]);
+            Assert.Null(container[typeof(OriginalMethod_2)]);
+            Assert.Null(container[typeof(OriginalMethod_3)]);
+        }
+
+        [TestFixtureTearDown]
+        public void TearDown()
+        {
+            binder.CancelAll();
+            Container.Reset();
+            GC.Collect();
         }
     }
 }

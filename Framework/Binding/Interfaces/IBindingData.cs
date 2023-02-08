@@ -22,9 +22,9 @@ using System.Collections.Generic;
 
 namespace EasyJection.Binding
 {
+    using EasyJection.Types;
     using Hooking;
     using Reflection;
-    using System.Collections;
 
     #region Comment
     /// <summary>
@@ -93,21 +93,36 @@ namespace EasyJection.Binding
     /// </list>
     /// </summary>
     #endregion
-    public interface IBindingData
+    public interface IBindingData : IDisposable
     {
-        /// <summary>Type from which the binding is bound to.</summary>
+        /// <summary>
+        /// Type from which the binding is bound to.
+        /// </summary>
         Type Type { get; }
 
-        /// <summary>Value to which the binding is bound to.</summary>
+        /// <summary>
+        /// Value to which the binding is bound to.
+        /// </summary>
         object Value { get; set; }
 
-        /// <summary>The constructor that is used to create an instance of the specified type.</summary>
+        /// <summary>
+        /// Factory to which the binding is bound to.
+        /// </summary>
+        IFactory Factory { get; set; }
+
+        /// <summary>
+        /// The constructor that is used to create an instance of the specified type.
+        /// </summary>
         ConstructorInfo InstantiationConstructor { get; set;  }
 
-        /// <summary>The type of the binding instance.</summary>
+        /// <summary>
+        /// The type of the binding instance.
+        /// </summary>
         BindingInstanceType InstanceType { get; set; }
 
-        /// <summary>The dictionary contains instances of the 'IHookedMethod' implementation</summary>
+        /// <summary>
+        /// The dictionary contains instances of the 'IHookedMethod' implementation
+        /// </summary>
         IDictionary<System.Reflection.MethodBase, IHookedMethod> HookedMethods { get; set; }
 
         IHookContainer HookContainer { get; set; }
@@ -115,5 +130,11 @@ namespace EasyJection.Binding
         IList<IHookedMethod> this[Type hookedMethodType] { get; }
 
         IHookedMethod this[System.Reflection.MethodBase methodBase] { get; }
+
+        /// <summary>
+        /// Returns the type of the <see cref="IBindingData.Value"/> variable.
+        /// </summary>
+        /// <returns><see cref="System.Type"/></returns>
+        public Type GetBoundType();
     }
 }

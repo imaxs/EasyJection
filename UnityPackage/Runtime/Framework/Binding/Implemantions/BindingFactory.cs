@@ -21,13 +21,18 @@ using System;
 
 namespace EasyJection.Binding
 {
-    using Hooking;
     using Utils;
+    using Types;
+    using Reflection;
+    using System.Runtime.CompilerServices;
+
     /// <summary>
-    /// Binding types to another types or instances.
+    /// Implementation of the <see cref="IBindingFactory"/> interface
     /// </summary>
     public class BindingFactory : IBindingFactory
     {
+        protected IReflectionCache cache;
+
         public IBinder Binder { get; private set; }
 
         public Type BindingType { get; private set; }
@@ -37,10 +42,11 @@ namespace EasyJection.Binding
         /// </summary>
         /// <param name="bindingType">The type being bound.</param>
         /// <param name="binder">The binder that will bind this binding.</param>
-        public BindingFactory(Type bindingType, IBinder binder)
+        public BindingFactory(IBinder binder, Type bindingType, IReflectionCache cache)
         {
             this.BindingType = bindingType;
             this.Binder = binder;
+            this.cache = cache;
         }
 
         /// <inheritdoc cref="IBindingFactory.AddBinding(object)"/>
@@ -49,14 +55,31 @@ namespace EasyJection.Binding
             var binding = new BindingData(this.BindingType, value, BindingInstanceType.Transient);
             this.Binder.AddBinding(binding);
 
-            return CreateBindingConditionFactoryProvider(binding);
+            // Precaching
+            if (value != null)
+                this.PreCaching(value as Type ?? value.GetType());
+
+            return this.CreateBindingConditionFactoryProvider(binding);
         }
 
-        /// <inheritdoc cref="IBindingFactory.AddBinding(object, BindingInstanceType)"/>
+        /// <inheritdoc cref="IBindingFactory.AddFactoryInstance(Type, IFactory)"/>
+        public IBindingInjection AddFactoryInstance(Type type, IFactory factory) 
+        {
+            var binding = new BindingData(this.BindingType, factory, type, BindingInstanceType.Factory | BindingInstanceType.Instance);
+            this.Binder.AddBinding(binding);
+
+            return this.CreateBindingInjectionFactoryProvider(binding);
+        }
+
+        /// <inheritdoc cref="IBindingFactory.AddBinding(object, BindingInstanceType, bool)"/>
         public IBindingInjection AddBinding(object value, BindingInstanceType instanceType, bool UseDefaultConstructor)
         {
             var binding = new BindingData(this.BindingType, value, instanceType);
             this.Binder.AddBinding(binding);
+
+            // Precaching
+            if (value != null)
+                this.PreCaching(value as Type ?? value.GetType());
 
             var bindInjection = this.CreateBindingInjectionFactoryProvider(binding);
 
@@ -82,9 +105,9 @@ namespace EasyJection.Binding
         }
 
         /// <inheritdoc cref="IBindingFactory.ToInstance{T}(T)"/>
-        public void ToInstance<T>(T instance)
+        public IBindingInjection ToInstance<T>(T instance)
         {
-            this.To(typeof(T), instance);
+            return this.To(typeof(T), instance);
         }
 
         /// <inheritdoc cref="IBindingFactory.To(Type, object)"/>
@@ -116,10 +139,16 @@ namespace EasyJection.Binding
             return this.AddBinding(type, BindingInstanceType.Factory, UseDefaultConstructor);
         }
 
+        /// <inheritdoc cref="IBindingFactory.ToFactory{T}(Types.IFactory)"/>
+        public void ToFactory<T>(Types.IFactory instance) where T : class
+        {
+            this.AddFactoryInstance(typeof(T), instance);
+        }
+
         /// <inheritdoc cref="IBindingFactory.ToFactory(Types.IFactory)"/>
         public void ToFactory(Types.IFactory instance)
         {
-            this.AddBinding(instance, BindingInstanceType.Factory | BindingInstanceType.Instance, false);
+            this.AddFactoryInstance(null, instance);
         }
 
         /// <inheritdoc cref="IBindingFactory.ToSelf(bool)"/>
@@ -179,6 +208,19 @@ namespace EasyJection.Binding
         protected virtual IBindingInjection CreateBindingInjectionFactoryProvider(IBindingData binding)
         {
             return new BindingInjectionFactory(binding);
+        }
+
+        /// <summary>
+        /// Adding reflected data of a type to the cache
+        /// </summary>
+        /// <param name="type">The type to be reflected</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void PreCaching(Type type) 
+        {
+            if (type == null)
+                return;
+
+            this.cache.Add(type as Type);
         }
     }
 }

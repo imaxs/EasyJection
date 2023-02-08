@@ -23,13 +23,27 @@ using System.Linq;
 
 namespace EasyJection.Binding
 {
+    using Reflection;
+
     /// <summary>
-    /// Binds a type to another type or instance.
+    /// Implementation of the <see cref="IBinder"/> interface
     /// </summary>
     public class Binder : IBinder
     {
+        protected IReflectionCache cache;
+
         /// <summary>Type bindings of the binder.</summary>
-        protected Dictionary<Type, IBindingData> typeBindings = new Dictionary<Type, IBindingData>();
+        protected Dictionary<Type, IBindingData> typeBindings;
+
+        public Binder() :
+            this(new ReflectionCache())
+        { }
+
+        public Binder(IReflectionCache cache)
+        {
+            this.typeBindings = new Dictionary<Type, IBindingData>();
+            this.cache = cache;
+        }
 
         /// <inheritdoc cref="IBinder.AddBinding"/>
         public void AddBinding(IBindingData bindingData)
@@ -46,7 +60,32 @@ namespace EasyJection.Binding
         /// <inheritdoc cref="IBindCreator.Bind"/>
         public IBindingFactory Bind(Type type)
         {
-            return this.BindingFactoryProvider(type);
+            return this.BindingFactoryProvider(type, this.cache);
+        }
+
+        /// <inheritdoc cref="IBinder.Cancel{T}"/>
+        public void Cancel<T>()
+        {
+           this.Cancel(typeof(T));
+        }
+
+        /// <inheritdoc cref="IBinder.Cancel(Type)"/>
+        public void Cancel(Type type)
+        {
+            if (!this.ContainsBindingFor(type))
+                return;
+
+            this.GetBindingFor(type).Dispose();
+            this.typeBindings.Remove(type);
+        }
+
+        /// <inheritdoc cref="IBinder.CancelAll"/>
+        public void CancelAll()
+        {
+            foreach(var binds in this.typeBindings) 
+                binds.Value.Dispose();
+
+            this.typeBindings.Clear();
         }
 
         /// <inheritdoc cref="IBinder.ContainsBindingFor{T}"/>
@@ -95,9 +134,9 @@ namespace EasyJection.Binding
         /// </summary>
         /// <param name="type">The type being bound.</param>
         /// <returns>The binding provider.</returns>
-        protected virtual IBindingFactory BindingFactoryProvider(Type type)
+        protected virtual IBindingFactory BindingFactoryProvider(Type type, IReflectionCache cache)
         {
-            return new BindingFactory(type, this);
+            return new BindingFactory(this, type, cache);
         }
     }
 }

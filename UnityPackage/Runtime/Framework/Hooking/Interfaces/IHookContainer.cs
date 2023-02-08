@@ -22,7 +22,7 @@ using System.Collections.Generic;
 
 namespace EasyJection.Hooking
 {
-    public interface IHookContainer
+    public interface IHookContainer : IDisposable
     {
         IList<IHookedMethod> this[Type type] { get; }
         void AddHook(Type key, IHookedMethod hook);

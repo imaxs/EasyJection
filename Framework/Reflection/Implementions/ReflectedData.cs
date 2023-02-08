@@ -18,18 +18,17 @@
  */
 
 using System;
-using System.Reflection;
-using System.Runtime.InteropServices;
 
 namespace EasyJection.Reflection
 {
+    using Types;
+
     /// <summary>
     /// Implements interface <see cref="IReflectedData"/><br/>
     /// <inheritdoc cref="IReflectedData"/>
     /// Represents the cached data of the reflected type.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class ReflectedData : IReflectedData
+    public class ReflectedData : Disposable, IReflectedData
     {
         private Type m_Type;
         /// <inheritdoc cref="IReflectedData.Type"/>
@@ -63,6 +62,15 @@ namespace EasyJection.Reflection
             this.m_PropertiesInfo = propertiesInfo;
             this.m_FieldsInfo = fieldsInfo;
             this.m_MethodsData = new MethodsData(methodsData);
+        }
+
+        protected override void Remove()
+        {
+            this.m_Type = null;
+            this.m_PropertiesInfo = null;
+            this.m_FieldsInfo = null;
+            this.m_ConstructorsData.Dispose();
+            this.m_MethodsData.Dispose();
         }
     }
 }

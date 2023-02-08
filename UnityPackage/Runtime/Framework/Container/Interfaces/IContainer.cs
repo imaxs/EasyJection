@@ -25,9 +25,8 @@ namespace EasyJection
 {
     /// <summary>
     /// Defines a container for dependency injection.
-    /// 
-    /// A container holds binding references, resolves types and injects dependencies.
     /// </summary>
+    /// <remarks>A container holds binding references, resolves types and injects dependencies.</remarks>
     public interface IContainer : IBindCreator, IResolver
     {
         /// <summary>
@@ -39,5 +38,7 @@ namespace EasyJection
         void Init();
 
         IBindingData this[Type type] { get; }
+
+        void Clear();
     }
 }

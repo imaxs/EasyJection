@@ -2,11 +2,8 @@
 {
     using Console = UnityEngine.Debug;
 
-    using System;
     using NUnit.Framework;
     using EasyJection.Reflection;
-    using FluentAssertions;
-    using System.Diagnostics;
 
     [TestFixture]
     public class ReflectionCacheTests

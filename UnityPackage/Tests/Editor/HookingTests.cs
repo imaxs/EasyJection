@@ -4,9 +4,7 @@
 
     using NUnit.Framework;
     using System;
-    using System.Collections.Generic;
     using EasyJection.Hooking;
-    using EasyJection.Binding.Extensions;
     using static EasyJection.Tests.EditMode.OriginalMethod;
 
     [TestFixture]
@@ -22,8 +20,6 @@
 
             var hookedMethod = Container.Instance[typeof(OriginalMethod)]
                                                  [typeof(HookedMethodVoid<string>)][0];
-
-            hookedMethod.HookManager.Hook();
 
             var instance = new OriginalMethod("Original string");
 
@@ -41,12 +37,13 @@
             var hookedMethod = Container.Instance[typeof(OriginalMethod)]
                                                  [typeof(HookedMethodVoid<string, int>)][0];
 
-            hookedMethod.HookManager.Hook();
-
             var instance = new OriginalMethod("Original string", 555);
 
             Assert.AreEqual("From Hook", instance.stringValue);
             Assert.AreEqual(2023, instance.number);
+
+
+            Container.Reset();
         }
 
         [Test]
@@ -60,10 +57,7 @@
             var hookedMethod = Container.Instance[typeof(OriginalMethod)]
                                                  [typeof(HookedMethodResult<int,int>)][0];
 
-
             var instance = new OriginalMethod();
-
-            hookedMethod.HookManager.Hook();
 
             // The 'getNumber' method returns the integer value obtained using the argument.
             // But with a hook, the integer value should be changed from 555 to 2023
@@ -74,6 +68,8 @@
             Assert.AreEqual(2023, returnedValue);
             returnedValue = instance.GetNumber(222);
             Assert.AreEqual(2023, returnedValue);
+
+            Container.Reset();
         }
 
         [Test]
@@ -94,8 +90,6 @@
 
             var instance = new OriginalMethod_2();
 
-            hookedMethod.HookManager.Hook();
-
             // The 'getNumber' method returns the integer value obtained using the argument.
             // But with a hook, the integer value should be changed from 555 to 2023
             int returnedValue = instance.GetNumber(555);
@@ -115,6 +109,8 @@
             Assert.AreEqual(9999, secondValue);
             secondValue = instance.GetNumber_SecondMethod(222);
             Assert.AreEqual(9999, secondValue);
+
+            Container.Reset();
         }
 
         [Test]
@@ -135,8 +131,6 @@
 
             var instance = new OriginalMethod_3();
 
-            hookedMethod.HookManager.Hook();
-
             // The 'getNumber' method returns the integer value obtained using the argument.
             // But with a hook, the integer value should be changed from 555 to 2023
             int returnedValue = instance.GetNumber(555);
@@ -156,6 +150,15 @@
             Assert.AreEqual(0.123f, floatValue);
             floatValue = instance.GetNumber(0.222f);
             Assert.AreEqual(0.123f, floatValue);
+
+            Container.Reset();
+        }
+
+        [OneTimeTearDown]
+        public void TearDown()
+        {
+            Container.Reset();
+            GC.Collect();
         }
     }
 }

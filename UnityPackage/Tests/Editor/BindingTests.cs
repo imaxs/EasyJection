@@ -23,6 +23,22 @@
             var bindings = binder.GetBindings();
 
             Assert.AreEqual(2, bindings.Count);
+
+            binder.CancelAll();
+        }
+
+        [Test]
+        public void TestBinding_DefaultConstructor()
+        {
+            var binder = new Binder();
+
+            binder.Bind<IMockClassInterface>().To<MockClass>();
+
+            var binding = binder.GetBindingFor<IMockClassInterface>();
+
+            Assert.IsNull(binding.InstantiationConstructor);
+
+            binder.CancelAll();
         }
 
         [Test]
@@ -35,6 +51,8 @@
             var contains = binder.ContainsBindingFor(typeof(IMockClassInterface));
 
             Assert.AreEqual(true, contains);
+
+            binder.CancelAll();
         }
 
         [Test]
@@ -48,6 +66,8 @@
 
             Assert.AreEqual(typeof(IMockClassInterface), bindings.Type);
             Assert.AreEqual(typeof(MockClass), bindings.Value);
+
+            binder.CancelAll();
         }
 
         [Test]
@@ -67,6 +87,8 @@
             Assert.AreEqual(999, (int) invokeData.ArgumentsObjects[0]);
             Assert.AreEqual(typeof(bool), invokeData.ArgumentTypes[1]);
             Assert.AreEqual(true, (bool)invokeData.ArgumentsObjects[1]);
+
+            binder.CancelAll();
         }
 
         [Test]
@@ -83,6 +105,8 @@
 
             Assert.AreEqual(BindingInstanceType.Transient, binding.InstanceType);
             Assert.NotNull(binding[typeof(MockClass).FindMethodResultByName<int>("PublicMethod")]);
+
+            binder.CancelAll();
         }
 
         [Test]
@@ -101,6 +125,8 @@
             Assert.NotNull(binding[typeof(HeirMockClass).FindMethodResultByNameWithArguments<int, int>("Method")]);
             Assert.AreEqual(1993, binding[typeof(HeirMockClass).FindMethodResultByNameWithArguments<int, int>("Method")].HookManager.InvokeData.ArgumentsObjects[0]);
             Assert.AreEqual(typeof(int), binding[typeof(HeirMockClass).FindMethodResultByNameWithArguments<int, int>("Method")].HookManager.InvokeData.ArgumentTypes[0]);
+
+            binder.CancelAll();
         }
 
         [Test]
@@ -114,6 +140,8 @@
 
             Assert.AreEqual(BindingInstanceType.Transient, binding.InstanceType);
             Assert.AreEqual(1, binding[typeof(HookedMethodResult<int,int>)].Count);
+
+            Container.Reset();
         }
 
         [Test]
@@ -128,6 +156,15 @@
 
             Assert.AreEqual(BindingInstanceType.Transient, binding.InstanceType);
             Assert.AreEqual(1, hooList.Count);
+
+            Container.Reset();
+        }
+
+        [OneTimeTearDown]
+        public void TearDown()
+        {
+            Container.Reset();
+            GC.Collect();
         }
     }
 }

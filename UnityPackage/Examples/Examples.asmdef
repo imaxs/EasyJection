@@ -1,12 +1,10 @@
 {
-    "name": "Unity.EasyJection.Editor",
+    "name": "Unity.EasyJection.Examples",
     "rootNamespace": "",
     "references": [
         "GUID:b2514e70d34064a1aa6a671caf19e152"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

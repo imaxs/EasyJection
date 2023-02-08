@@ -84,5 +84,12 @@
             Assert.AreEqual(null, reflectedData.MethodsData.MethodsParsInfo[2]);
             Assert.AreEqual(null, reflectedData.MethodsData.MethodsParsInfo[3]);
         }
+
+        [OneTimeTearDown]
+        public void TearDown()
+        {
+            Container.Reset();
+            GC.Collect();
+        }
     }
 }

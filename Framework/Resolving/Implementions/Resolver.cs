@@ -22,9 +22,13 @@ using System;
 namespace EasyJection.Resolving
 {
     using Binding;
-    using Extensions;
+    using EasyJection.Hooking;
+    using EasyJection.Types;
     using Reflection;
 
+    /// <summary>
+    /// Implementation of the <see cref="IResolver"/> interface
+    /// </summary>
     public class Resolver : IResolver
     {
         /// <summary>Binder used to resolved bindings.</summary>
@@ -68,13 +72,12 @@ namespace EasyJection.Resolving
             if (bindingData.InstanceType.HasFlag(BindingInstanceType.Instance))
             {
                 if (bindingData.InstanceType.HasFlag(BindingInstanceType.Factory))
-                    return (bindingData.Value as Types.IFactory).CreateInstance();
+                    return bindingData.Factory.CreateInstance(bindingData);
                 else
                     return bindingData.Value;
             }
 
-            Type instanceType = bindingData.Value as Type;
-            object instance = this.Instantiate(instanceType, bindingData);
+            object instance = this.Instantiate(bindingData.Value as Type, bindingData);
 
             if (bindingData.InstanceType.HasFlag(BindingInstanceType.Singleton))
             {
@@ -84,8 +87,8 @@ namespace EasyJection.Resolving
             else if (bindingData.InstanceType.HasFlag(BindingInstanceType.Factory))
             {
                 bindingData.InstanceType = BindingInstanceType.Factory | BindingInstanceType.Instance;
-                bindingData.Value = instance;
-                return (bindingData.Value as Types.IFactory).CreateInstance();
+                bindingData.Factory = instance as IFactory;
+                return bindingData.Factory.CreateInstance(bindingData);
             }
 
             return instance;
@@ -150,6 +153,9 @@ namespace EasyJection.Resolving
                     // Use the specified parameterized constructor
                     instance = constructorInfo.ctorArgsInvoke(arguments);
                 }
+
+                // Restoring the hook
+                hookManager.Hook();
             }
 
             // Dependency Injection

@@ -17,10 +17,10 @@
  * limitations under the License.
  */
 
-using System;
-
 namespace EasyJection.Types
 {
+    using Binding;
+
     /// <summary>
     /// Defines a factory of instances.
     /// </summary>
@@ -30,6 +30,6 @@ namespace EasyJection.Types
         /// Creates an instance of an object of type using the factory
         /// </summary>
         /// <returns>The object instance.</returns>
-        object CreateInstance();
+        object CreateInstance(IBindingData bindingData = null);
     }
 }

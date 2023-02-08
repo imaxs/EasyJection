@@ -23,6 +23,9 @@ using System.Collections.Generic;
 
 namespace EasyJection.Binding
 {
+    /// <summary>
+    /// Implementation of the <see cref="IBindingInjection"/> interface
+    /// </summary>
     public class BindingInjectionFactory : IBindingInjection
     {
         /// <summary>Binding to have its conditions defined.</summary>
@@ -31,7 +34,7 @@ namespace EasyJection.Binding
         /// <summary>
         /// Initializes a new instance of the <see cref="BindingInjectionFactory"/> class.
         /// </summary>
-        /// <param name="binding">The binding to have its conditions settled.</param>
+        /// <param name="binding">The binding data.</param>
         public BindingInjectionFactory(IBindingData binding)
         {
             this.binding = binding;
@@ -103,6 +106,11 @@ namespace EasyJection.Binding
             return this.InjectionTo().Constructor<T1, T2, T3, T4, T5, T6, T7, T8, T9>(UseForInstantiation);
         }
 
+        /// <summary>
+        /// Resolves the provider of binding injection conditions.
+        /// </summary>
+        /// <param name="binding">Binding Data Instance</param>
+        /// <returns>The binding injection condition object related to the binding.</returns>
         protected virtual IBindingInjectionCondition CreateBindingInjectionConditionFactoryProvider(IBindingData binding)
         {
             this.binding.HookContainer = new HookContainer();

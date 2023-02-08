@@ -17,17 +17,15 @@
  * limitations under the License.
  */
 
-using System.Runtime.InteropServices;
-
 namespace EasyJection.Reflection
 {
+    using Types;
     /// <summary>
     /// Implements interface <see cref="IConstructorsData"/><br/>
     /// <inheritdoc cref="IConstructorsData"/>
     /// Represents the cached methods data of the reflected class.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class ConstructorsData : IConstructorsData
+    public class ConstructorsData : Disposable, IConstructorsData
     {
         private ConstructorInfo[] m_ConstructorsInfo;
         /// <inheritdoc cref="IConstructorsData.ConstructorsInfo"/>
@@ -41,6 +39,12 @@ namespace EasyJection.Reflection
         {
             this.m_ConstructorsInfo = infos.ctors;
             this.m_ConstructorsParsInfo = infos.pars;
+        }
+
+        protected override void Remove()
+        {
+            this.m_ConstructorsInfo = null;
+            this.m_ConstructorsParsInfo = null;
         }
     }
 }

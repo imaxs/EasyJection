@@ -50,7 +50,7 @@ namespace EasyJection.Reflection
     /// </list>
     /// </summary>
     #endregion
-    public interface IReflectedData
+    public interface IReflectedData : IDisposable
     {
         /// <summary>Gets the current <see cref="System.Type"/> of the current instance.</summary>     
         Type Type { get; }

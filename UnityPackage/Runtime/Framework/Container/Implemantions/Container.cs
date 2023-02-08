@@ -24,30 +24,43 @@ namespace EasyJection
     using Resolving;
     using Binding;
     using Reflection;
-    using Hooking;
+    using System.Runtime.CompilerServices;
 
+    /// <summary>
+    /// Implementation of the <see cref="IContainer"/> interface
+    /// </summary>
     public class Container : IContainer
     {
         private static object _lock = new object();
-        private static Container _instance = null;
+        private static IContainer _instance = null;
 
-        public static Container Instance
+        public static IContainer Instance
         {
+            [MethodImpl(MethodImplOptions.NoInlining)]
             get
             {
-                if (_instance is null)
+                if (Container._instance is null)
                 {
                     lock (_lock)
                     {
-                        _instance = _instance ?? new Container();
+                        Container._instance = Container._instance ?? new Container();
                     }
                 }
-                return _instance;
+                return Container._instance;
             }
         }
 
-        protected IBinder binder;
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void Reset()
+        {
+            lock (_lock) 
+            {
+                Container._instance.Clear();
+            }
+        }
+
         protected IReflectionCache cache;
+        protected IBinder binder;
         protected IResolver resolver;
 
         /// <summary>
@@ -57,7 +70,7 @@ namespace EasyJection
         /// When passing no parameters to the constructor, default internal objects are created.
         /// </remarks>
         public Container()
-            : this(new Binder(), new ReflectionCache())
+            : this(new ReflectionCache())
         { }
 
         /// <summary>
@@ -68,10 +81,10 @@ namespace EasyJection
         /// Default binder and injector objects are created.
         /// </remarks>
         /// <param name="cache">Reflection cache used to get type info.</param>
-        protected Container(IBinder binder, IReflectionCache cache)
+        protected Container(IReflectionCache cache)
         {
-            this.binder = binder;
             this.cache = cache;
+            this.binder = new Binder(cache);
             this.resolver = new Resolver(this.cache, this.binder);
         }
 
@@ -119,6 +132,13 @@ namespace EasyJection
         public object[] Resolve(object[] objects, Type[] types)
         {
             return this.resolver.Resolve(objects, types);
+        }
+
+        /// <inheritdoc cref="IContainer.Clear"/>
+        public void Clear()
+        {
+            this.binder.CancelAll();
+            this.cache.Clear();
         }
     }
 }

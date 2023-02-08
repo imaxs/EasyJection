@@ -18,28 +18,27 @@
  */
 
 using System;
-using EasyJection.Hooking;
-using System.Collections.Generic;
-using System.Reflection;
 
 namespace EasyJection.Binding
 {
     using EasyJection.Reflection.Utils;
-    using EasyJection.Reflection;
     using Extensions;
     using Hooking;
-    using System.Runtime.InteropServices;
 
+    /// <summary>
+    /// Implementation of the <see cref="IBindingInjectionCondition"/> interface
+    /// </summary>
     public class BindingInjectionConditionFactory : IBindingInjectionCondition
     {
-        /// <summary>Binding to have its conditions defined.</summary>
+        /// <summary>The binding containing its conditions.</summary>
         protected IBindingData binding;
+        /// <summary>The hook container containing all the hooks needed for this binding.</summary>
         protected IHookContainer hookContainer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BindingInjectionConditionFactory"/> class.
         /// </summary>
-        /// <param name="binding">The binding to have its conditions settled.</param>
+        /// <param name="binding">The binding data.</param>
         public BindingInjectionConditionFactory(IBindingData binding)
         {
             this.binding = binding;
@@ -55,10 +54,10 @@ namespace EasyJection.Binding
 
             var hookedMethod = new HookedMethodVoid(this.hookContainer, methodBase);
             
-            
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.Constructor{T}(bool)"/>
         public IBindingMethodCondition Constructor<T>(bool UseForInstantiation = false)
         {
             var methodBase = (this.binding.Value as Type).FindConstructorWithArguments<T>();
@@ -72,6 +71,7 @@ namespace EasyJection.Binding
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.Constructor{T1, T2}(bool)"/>
         public IBindingMethodCondition Constructor<T1, T2>(bool UseForInstantiation = false)
         {
             var methodBase = (this.binding.Value as Type).FindConstructorWithArguments<T1, T2>();
@@ -85,6 +85,7 @@ namespace EasyJection.Binding
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.Constructor{T1, T2, T3}(bool)"/>
         public IBindingMethodCondition Constructor<T1, T2, T3>(bool UseForInstantiation = false)
         {
             var methodBase = (this.binding.Value as Type).FindConstructorWithArguments<T1, T2, T3>();
@@ -98,6 +99,7 @@ namespace EasyJection.Binding
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.Constructor{T1, T2, T3, T4}(bool)"/>
         public IBindingMethodCondition Constructor<T1, T2, T3, T4>(bool UseForInstantiation = false)
         {
             var methodBase = (this.binding.Value as Type).FindConstructorWithArguments<T1, T2, T3, T4>();
@@ -111,6 +113,7 @@ namespace EasyJection.Binding
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.Constructor{T1, T2, T3, T4, T5}(bool)"/>
         public IBindingMethodCondition Constructor<T1, T2, T3, T4, T5>(bool UseForInstantiation = false)
         {
             var methodBase = (this.binding.Value as Type).FindConstructorWithArguments<T1, T2, T3, T4, T5>();
@@ -124,6 +127,7 @@ namespace EasyJection.Binding
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.Constructor{T1, T2, T3, T4, T5, T6}(bool)"/>
         public IBindingMethodCondition Constructor<T1, T2, T3, T4, T5, T6>(bool UseForInstantiation = false)
         {
             var methodBase = (this.binding.Value as Type).FindConstructorWithArguments<T1, T2, T3, T4, T5, T6>();
@@ -137,6 +141,7 @@ namespace EasyJection.Binding
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.Constructor{T1, T2, T3, T4, T5, T6, T7}(bool)"/>
         public IBindingMethodCondition Constructor<T1, T2, T3, T4, T5, T6, T7>(bool UseForInstantiation = false)
         {
             var methodBase = (this.binding.Value as Type).FindConstructorWithArguments<T1, T2, T3, T4, T5, T6, T7>();
@@ -150,6 +155,7 @@ namespace EasyJection.Binding
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.Constructor{T1, T2, T3, T4, T5, T6, T7, T8}(bool)"/>
         public IBindingMethodCondition Constructor<T1, T2, T3, T4, T5, T6, T7, T8>(bool UseForInstantiation = false)
         {
             var methodBase = (this.binding.Value as Type).FindConstructorWithArguments<T1, T2, T3, T4, T5, T6, T7, T8>();
@@ -163,6 +169,7 @@ namespace EasyJection.Binding
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.Constructor{T1, T2, T3, T4, T5, T6, T7, T8, T9}(bool)"/>
         public IBindingMethodCondition Constructor<T1, T2, T3, T4, T5, T6, T7, T8, T9>(bool UseForInstantiation = false)
         {
             var methodBase = (this.binding.Value as Type).FindConstructorWithArguments<T1, T2, T3, T4, T5, T6, T7, T8, T9>();
@@ -187,6 +194,7 @@ namespace EasyJection.Binding
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.MethodResult{T, TResult}(string)"/>
         public IBindingMethodCondition MethodResult<T, TResult>(string methodName)
         {
             var methodBase = (this.binding.Value as Type).FindMethodResultByNameWithArguments<T, TResult>(methodName);
@@ -198,6 +206,7 @@ namespace EasyJection.Binding
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.MethodResult{T1, T2, TResult}(string)"/>
         public IBindingMethodCondition MethodResult<T1, T2, TResult>(string methodName)
         {
             var methodBase = (this.binding.Value as Type).FindMethodResultByNameWithArguments<T1, T2, TResult>(methodName);
@@ -209,6 +218,7 @@ namespace EasyJection.Binding
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.MethodResult{T1, T2, T3, TResult}(string)"/>
         public IBindingMethodCondition MethodResult<T1, T2, T3, TResult>(string methodName)
         {
             var methodBase = (this.binding.Value as Type).FindMethodResultByNameWithArguments<T1, T2, T3, TResult>(methodName);
@@ -220,6 +230,7 @@ namespace EasyJection.Binding
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.MethodResult{T1, T2, T3, T4, TResult}(string)"/>
         public IBindingMethodCondition MethodResult<T1, T2, T3, T4, TResult>(string methodName)
         {
             var methodBase = (this.binding.Value as Type).FindMethodResultByNameWithArguments<T1, T2, T3, T4, TResult>(methodName);
@@ -231,6 +242,7 @@ namespace EasyJection.Binding
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.MethodResult{T1, T2, T3, T4, T5, TResult}(string)"/>
         public IBindingMethodCondition MethodResult<T1, T2, T3, T4, T5, TResult>(string methodName)
         {
             var methodBase = (this.binding.Value as Type).FindMethodResultByNameWithArguments<T1, T2, T3, T4, T5, TResult>(methodName);
@@ -242,6 +254,7 @@ namespace EasyJection.Binding
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.MethodResult{T1, T2, T3, T4, T5, T6, TResult}(string)"/>
         public IBindingMethodCondition MethodResult<T1, T2, T3, T4, T5, T6, TResult>(string methodName)
         {
             var methodBase = (this.binding.Value as Type).FindMethodResultByNameWithArguments<T1, T2, T3, T4, T5, T6, TResult>(methodName);
@@ -253,6 +266,7 @@ namespace EasyJection.Binding
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.MethodResult{T1, T2, T3, T4, T5, T6, T7, TResult}(string)"/>
         public IBindingMethodCondition MethodResult<T1, T2, T3, T4, T5, T6, T7, TResult>(string methodName)
         {
             var methodBase = (this.binding.Value as Type).FindMethodResultByNameWithArguments<T1, T2, T3, T4, T5, T6, T7, TResult>(methodName);
@@ -264,6 +278,7 @@ namespace EasyJection.Binding
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.MethodResult{T1, T2, T3, T4, T5, T6, T7, T8, TResult}(string)"/>
         public IBindingMethodCondition MethodResult<T1, T2, T3, T4, T5, T6, T7, T8, TResult>(string methodName)
         {
             var methodBase = (this.binding.Value as Type).FindMethodResultByNameWithArguments<T1, T2, T3, T4, T5, T6, T7, T8, TResult>(methodName);
@@ -275,6 +290,7 @@ namespace EasyJection.Binding
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.MethodResult{T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult}(string)"/>
         public IBindingMethodCondition MethodResult<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>(string methodName)
         {
             var methodBase = (this.binding.Value as Type).FindMethodResultByNameWithArguments<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>(methodName);
@@ -286,6 +302,7 @@ namespace EasyJection.Binding
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.MethodVoid(string)"/>
         public IBindingMethodCondition MethodVoid(string methodName)
         {
             var methodBase = (this.binding.Value as Type).FindMethodByName(methodName);
@@ -296,6 +313,7 @@ namespace EasyJection.Binding
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.MethodVoid{T}(string)"/>
         public IBindingMethodCondition MethodVoid<T>(string methodName)
         {
             var methodBase = (this.binding.Value as Type).FindMethodByNameWithArguments<T>(methodName);
@@ -307,6 +325,7 @@ namespace EasyJection.Binding
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.MethodVoid{T1, T2}(string)"/>
         public IBindingMethodCondition MethodVoid<T1, T2>(string methodName)
         {
             var methodBase = (this.binding.Value as Type).FindMethodByNameWithArguments<T1, T2>(methodName);
@@ -318,6 +337,7 @@ namespace EasyJection.Binding
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.MethodVoid{T1, T2, T3}(string)"/>
         public IBindingMethodCondition MethodVoid<T1, T2, T3>(string methodName)
         {
             var methodBase = (this.binding.Value as Type).FindMethodByNameWithArguments<T1, T2, T3>(methodName);
@@ -329,6 +349,7 @@ namespace EasyJection.Binding
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.MethodVoid{T1, T2, T3, T4}(string)"/>
         public IBindingMethodCondition MethodVoid<T1, T2, T3, T4>(string methodName)
         {
             var methodBase = (this.binding.Value as Type).FindMethodByNameWithArguments<T1, T2, T3, T4>(methodName);
@@ -340,6 +361,7 @@ namespace EasyJection.Binding
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.MethodVoid{T1, T2, T3, T4, T5}(string)"/>
         public IBindingMethodCondition MethodVoid<T1, T2, T3, T4, T5>(string methodName)
         {
             var methodBase = (this.binding.Value as Type).FindMethodByNameWithArguments<T1, T2, T3, T4, T5>(methodName);
@@ -351,6 +373,7 @@ namespace EasyJection.Binding
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.MethodVoid{T1, T2, T3, T4, T5, T6}(string)"/>
         public IBindingMethodCondition MethodVoid<T1, T2, T3, T4, T5, T6>(string methodName)
         {
             var methodBase = (this.binding.Value as Type).FindMethodByNameWithArguments<T1, T2, T3, T4, T5, T6>(methodName);
@@ -362,6 +385,7 @@ namespace EasyJection.Binding
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.MethodVoid{T1, T2, T3, T4, T5, T6, T7}(string)"/>
         public IBindingMethodCondition MethodVoid<T1, T2, T3, T4, T5, T6, T7>(string methodName)
         {
             var methodBase = (this.binding.Value as Type).FindMethodByNameWithArguments<T1, T2, T3, T4, T5, T6, T7>(methodName);
@@ -373,6 +397,7 @@ namespace EasyJection.Binding
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.MethodVoid{T1, T2, T3, T4, T5, T6, T7, T8}(string)"/>
         public IBindingMethodCondition MethodVoid<T1, T2, T3, T4, T5, T6, T7, T8>(string methodName)
         {
             var methodBase = (this.binding.Value as Type).FindMethodByNameWithArguments<T1, T2, T3, T4, T5, T6, T7, T8>(methodName);
@@ -384,6 +409,7 @@ namespace EasyJection.Binding
             return CreateBindingMethodConditionProvider(methodBase, hookedMethod);
         }
 
+        /// <inheritdoc cref="IBindingInjectionCondition.MethodVoid{T1, T2, T3, T4, T5, T6, T7, T8, T9}(string)"/>
         public IBindingMethodCondition MethodVoid<T1, T2, T3, T4, T5, T6, T7, T8, T9>(string methodName)
         {
             var methodBase = (this.binding.Value as Type).FindMethodByNameWithArguments<T1, T2, T3, T4, T5, T6, T7, T8, T9>(methodName);
