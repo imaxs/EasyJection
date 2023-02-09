@@ -35,9 +35,9 @@ namespace EasyJection.Hooking
                     {
                         info = ((Action)(() =>
                         {
-                            var binding = EasyJection.Container.Instance[this.GetType()];
+                            var instanceType = this.GetType(); var binding = EasyJection.Container.Instance[instanceType];
                             var hookedMethod = binding[typeof(HookedMethodVoid)][0];
-                            hookedMethod.HookManager.InvokeOriginalMethodVoid(this);
+                            hookedMethod.HookManager.InvokeOriginalMethodVoid(binding, this);
                         })).Method;
                     }
                     break;
@@ -45,9 +45,9 @@ namespace EasyJection.Hooking
                     {
                         info = ((Action)(() =>
                         {
-                            var binding = EasyJection.Container.Instance[this.GetType()];
+                            var instanceType = this.GetType(); var binding = EasyJection.Container.Instance[instanceType];
                             var hookedMethod = binding[typeof(HookedMethodVoid)][1];
-                            hookedMethod.HookManager.InvokeOriginalMethodVoid(this);
+                            hookedMethod.HookManager.InvokeOriginalMethodVoid(binding, this);
                         })).Method;
                     }
                     break;
@@ -69,9 +69,9 @@ namespace EasyJection.Hooking
                     {
                         info = ((Action<T>)((T value) =>
                         {
-                            var binding = EasyJection.Container.Instance[this.GetType()];
+                            var instanceType = this.GetType(); var binding = EasyJection.Container.Instance[instanceType];
                             var hookedMethod = binding[typeof(HookedMethodVoid<T>)][0];
-                            hookedMethod.HookManager.InvokeOriginalMethodVoid(this, new object[] { value });
+                            hookedMethod.HookManager.InvokeOriginalMethodVoid(binding, this, new object[] { value });
                         })).Method;
                     }
                     break;
@@ -79,9 +79,9 @@ namespace EasyJection.Hooking
                     {
                         info = ((Action<T>)((T value) =>
                         {
-                            var binding = EasyJection.Container.Instance[this.GetType()];
+                            var instanceType = this.GetType(); var binding = EasyJection.Container.Instance[instanceType];
                             var hookedMethod = binding[typeof(HookedMethodVoid<T>)][1];
-                            hookedMethod.HookManager.InvokeOriginalMethodVoid(this, new object[] { value });
+                            hookedMethod.HookManager.InvokeOriginalMethodVoid(binding, this, new object[] { value });
                         })).Method;
                     }
                     break;
@@ -103,9 +103,9 @@ namespace EasyJection.Hooking
                     {
                         info = ((Action<T1, T2>)((T1 val1, T2 val2) =>
                         {
-                            var binding = EasyJection.Container.Instance[this.GetType()];
+                            var instanceType = this.GetType(); var binding = EasyJection.Container.Instance[instanceType];
                             var hookedMethod = binding[typeof(HookedMethodVoid<T1, T2>)][0];
-                            hookedMethod.HookManager.InvokeOriginalMethodVoid(this, new object[] { val1, val2 });
+                            hookedMethod.HookManager.InvokeOriginalMethodVoid(binding, this, new object[] { val1, val2 });
                         })).Method;
                     }
                     break;
@@ -113,9 +113,9 @@ namespace EasyJection.Hooking
                     {
                         info = ((Action<T1, T2>)((T1 val1, T2 val2) =>
                         {
-                            var binding = EasyJection.Container.Instance[this.GetType()];
+                            var instanceType = this.GetType(); var binding = EasyJection.Container.Instance[instanceType];
                             var hookedMethod = binding[typeof(HookedMethodVoid<T1, T2>)][1];
-                            hookedMethod.HookManager.InvokeOriginalMethodVoid(this, new object[] { val1, val2 });
+                            hookedMethod.HookManager.InvokeOriginalMethodVoid(binding, this, new object[] { val1, val2 });
                         })).Method;
                     }
                     break;
@@ -137,9 +137,9 @@ namespace EasyJection.Hooking
                     {
                         info = ((Action<T1, T2, T3>)((T1 val1, T2 val2, T3 val3) =>
                         {
-                            var binding = EasyJection.Container.Instance[this.GetType()];
+                            var instanceType = this.GetType(); var binding = EasyJection.Container.Instance[instanceType];
                             var hookedMethod = binding[typeof(HookedMethodVoid<T1, T2, T3>)][0];
-                            hookedMethod.HookManager.InvokeOriginalMethodVoid(this, new object[] { val1, val2, val3 });
+                            hookedMethod.HookManager.InvokeOriginalMethodVoid(binding, this, new object[] { val1, val2, val3 });
                         })).Method;
                     }
                     break;
@@ -147,9 +147,9 @@ namespace EasyJection.Hooking
                     {
                         info = ((Action<T1, T2, T3>)((T1 val1, T2 val2, T3 val3) =>
                         {
-                            var binding = EasyJection.Container.Instance[this.GetType()];
+                            var instanceType = this.GetType(); var binding = EasyJection.Container.Instance[instanceType];
                             var hookedMethod = binding[typeof(HookedMethodVoid<T1, T2, T3>)][1];
-                            hookedMethod.HookManager.InvokeOriginalMethodVoid(this, new object[] { val1, val2, val3 });
+                            hookedMethod.HookManager.InvokeOriginalMethodVoid(binding, this, new object[] { val1, val2, val3 });
                         })).Method;
                     }
                     break;
@@ -171,9 +171,9 @@ namespace EasyJection.Hooking
                     {
                         info = ((Action<T1, T2, T3, T4>)((T1 val1, T2 val2, T3 val3, T4 val4) =>
                         {
-                            var binding = EasyJection.Container.Instance[this.GetType()];
+                            var instanceType = this.GetType(); var binding = EasyJection.Container.Instance[instanceType];
                             var hookedMethod = binding[typeof(HookedMethodVoid<T1, T2, T3, T4>)][0];
-                            hookedMethod.HookManager.InvokeOriginalMethodVoid(this, new object[] { val1, val2, val3, val4 });
+                            hookedMethod.HookManager.InvokeOriginalMethodVoid(binding, this, new object[] { val1, val2, val3, val4 });
                         })).Method;
                     }
                     break;
@@ -181,9 +181,9 @@ namespace EasyJection.Hooking
                     {
                         info = ((Action<T1, T2, T3, T4>)((T1 val1, T2 val2, T3 val3, T4 val4) =>
                         {
-                            var binding = EasyJection.Container.Instance[this.GetType()];
+                            var instanceType = this.GetType(); var binding = EasyJection.Container.Instance[instanceType];
                             var hookedMethod = binding[typeof(HookedMethodVoid<T1, T2, T3, T4>)][1];
-                            hookedMethod.HookManager.InvokeOriginalMethodVoid(this, new object[] { val1, val2, val3, val4 });
+                            hookedMethod.HookManager.InvokeOriginalMethodVoid(binding, this, new object[] { val1, val2, val3, val4 });
                         })).Method;
                     }
                     break;
@@ -205,9 +205,9 @@ namespace EasyJection.Hooking
                     {
                         info = ((Action<T1, T2, T3, T4, T5>)((T1 val1, T2 val2, T3 val3, T4 val4, T5 val5) =>
                         {
-                            var binding = EasyJection.Container.Instance[this.GetType()];
+                            var instanceType = this.GetType(); var binding = EasyJection.Container.Instance[instanceType];
                             var hookedMethod = binding[typeof(HookedMethodVoid<T1, T2, T3, T4, T5>)][0];
-                            hookedMethod.HookManager.InvokeOriginalMethodVoid(this, new object[] { val1, val2, val3, val4, val5 });
+                            hookedMethod.HookManager.InvokeOriginalMethodVoid(binding, this, new object[] { val1, val2, val3, val4, val5 });
                         })).Method;
                     }
                     break;
@@ -215,9 +215,9 @@ namespace EasyJection.Hooking
                     {
                         info = ((Action<T1, T2, T3, T4, T5>)((T1 val1, T2 val2, T3 val3, T4 val4, T5 val5) =>
                         {
-                            var binding = EasyJection.Container.Instance[this.GetType()];
+                            var instanceType = this.GetType(); var binding = EasyJection.Container.Instance[instanceType];
                             var hookedMethod = binding[typeof(HookedMethodVoid<T1, T2, T3, T4, T5>)][1];
-                            hookedMethod.HookManager.InvokeOriginalMethodVoid(this, new object[] { val1, val2, val3, val4, val5 });
+                            hookedMethod.HookManager.InvokeOriginalMethodVoid(binding, this, new object[] { val1, val2, val3, val4, val5 });
                         })).Method;
                     }
                     break;
@@ -239,9 +239,9 @@ namespace EasyJection.Hooking
                     {
                         info = ((Action<T1, T2, T3, T4, T5, T6>)((T1 val1, T2 val2, T3 val3, T4 val4, T5 val5, T6 val6) =>
                         {
-                            var binding = EasyJection.Container.Instance[this.GetType()];
+                            var instanceType = this.GetType(); var binding = EasyJection.Container.Instance[instanceType];
                             var hookedMethod = binding[typeof(HookedMethodVoid<T1, T2, T3, T4, T5, T6>)][0];
-                            hookedMethod.HookManager.InvokeOriginalMethodVoid(this, new object[] { val1, val2, val3, val4, val5, val6 });
+                            hookedMethod.HookManager.InvokeOriginalMethodVoid(binding, this, new object[] { val1, val2, val3, val4, val5, val6 });
                         })).Method;
                     }
                     break;
@@ -249,9 +249,9 @@ namespace EasyJection.Hooking
                     {
                         info = ((Action<T1, T2, T3, T4, T5, T6>)((T1 val1, T2 val2, T3 val3, T4 val4, T5 val5, T6 val6) =>
                         {
-                            var binding = EasyJection.Container.Instance[this.GetType()];
+                            var instanceType = this.GetType(); var binding = EasyJection.Container.Instance[instanceType];
                             var hookedMethod = binding[typeof(HookedMethodVoid<T1, T2, T3, T4, T5, T6>)][1];
-                            hookedMethod.HookManager.InvokeOriginalMethodVoid(this, new object[] { val1, val2, val3, val4, val5, val6 });
+                            hookedMethod.HookManager.InvokeOriginalMethodVoid(binding, this, new object[] { val1, val2, val3, val4, val5, val6 });
                         })).Method;
                     }
                     break;
@@ -273,9 +273,9 @@ namespace EasyJection.Hooking
                     {
                         info = ((Action<T1, T2, T3, T4, T5, T6, T7>)((T1 val1, T2 val2, T3 val3, T4 val4, T5 val5, T6 val6, T7 val7) =>
                         {
-                            var binding = EasyJection.Container.Instance[this.GetType()];
+                            var instanceType = this.GetType(); var binding = EasyJection.Container.Instance[instanceType];
                             var hookedMethod = binding[typeof(HookedMethodVoid<T1, T2, T3, T4, T5, T6, T7>)][0];
-                            hookedMethod.HookManager.InvokeOriginalMethodVoid(this, new object[] { val1, val2, val3, val4, val5, val6, val7 });
+                            hookedMethod.HookManager.InvokeOriginalMethodVoid(binding, this, new object[] { val1, val2, val3, val4, val5, val6, val7 });
                         })).Method;
                     }
                     break;
@@ -283,9 +283,9 @@ namespace EasyJection.Hooking
                     {
                         info = ((Action<T1, T2, T3, T4, T5, T6, T7>)((T1 val1, T2 val2, T3 val3, T4 val4, T5 val5, T6 val6, T7 val7) =>
                         {
-                            var binding = EasyJection.Container.Instance[this.GetType()];
+                            var instanceType = this.GetType(); var binding = EasyJection.Container.Instance[instanceType];
                             var hookedMethod = binding[typeof(HookedMethodVoid<T1, T2, T3, T4, T5, T6, T7>)][1];
-                            hookedMethod.HookManager.InvokeOriginalMethodVoid(this, new object[] { val1, val2, val3, val4, val5, val6, val7 });
+                            hookedMethod.HookManager.InvokeOriginalMethodVoid(binding, this, new object[] { val1, val2, val3, val4, val5, val6, val7 });
                         })).Method;
                     }
                     break;
@@ -307,9 +307,9 @@ namespace EasyJection.Hooking
                     {
                         info = ((Action<T1, T2, T3, T4, T5, T6, T7, T8>)((T1 val1, T2 val2, T3 val3, T4 val4, T5 val5, T6 val6, T7 val7, T8 val8) =>
                         {
-                            var binding = EasyJection.Container.Instance[this.GetType()];
+                            var instanceType = this.GetType(); var binding = EasyJection.Container.Instance[instanceType];
                             var hookedMethod = binding[typeof(HookedMethodVoid<T1, T2, T3, T4, T5, T6, T7, T8>)][0];
-                            hookedMethod.HookManager.InvokeOriginalMethodVoid(this, new object[] { val1, val2, val3, val4, val5, val6, val7, val8 });
+                            hookedMethod.HookManager.InvokeOriginalMethodVoid(binding, this, new object[] { val1, val2, val3, val4, val5, val6, val7, val8 });
                         })).Method;
                     }
                     break;
@@ -317,9 +317,9 @@ namespace EasyJection.Hooking
                     {
                         info = ((Action<T1, T2, T3, T4, T5, T6, T7, T8>)((T1 val1, T2 val2, T3 val3, T4 val4, T5 val5, T6 val6, T7 val7, T8 val8) =>
                         {
-                            var binding = EasyJection.Container.Instance[this.GetType()];
+                            var instanceType = this.GetType(); var binding = EasyJection.Container.Instance[instanceType];
                             var hookedMethod = binding[typeof(HookedMethodVoid<T1, T2, T3, T4, T5, T6, T7, T8>)][1];
-                            hookedMethod.HookManager.InvokeOriginalMethodVoid(this, new object[] { val1, val2, val3, val4, val5, val6, val7, val8 });
+                            hookedMethod.HookManager.InvokeOriginalMethodVoid(binding, this, new object[] { val1, val2, val3, val4, val5, val6, val7, val8 });
                         })).Method;
                     }
                     break;
@@ -341,9 +341,9 @@ namespace EasyJection.Hooking
                     {
                         info = ((Action<T1, T2, T3, T4, T5, T6, T7, T8, T9>)((T1 val1, T2 val2, T3 val3, T4 val4, T5 val5, T6 val6, T7 val7, T8 val8, T9 val9) =>
                         {
-                            var binding = EasyJection.Container.Instance[this.GetType()];
+                            var instanceType = this.GetType(); var binding = EasyJection.Container.Instance[instanceType];
                             var hookedMethod = binding[typeof(HookedMethodVoid<T1, T2, T3, T4, T5, T6, T7, T8, T9>)][0];
-                            hookedMethod.HookManager.InvokeOriginalMethodVoid(this, new object[] { val1, val2, val3, val4, val5, val6, val7, val8, val9 });
+                            hookedMethod.HookManager.InvokeOriginalMethodVoid(binding, this, new object[] { val1, val2, val3, val4, val5, val6, val7, val8, val9 });
                         })).Method;
                     }
                     break;
@@ -351,9 +351,9 @@ namespace EasyJection.Hooking
                     {
                         info = ((Action<T1, T2, T3, T4, T5, T6, T7, T8, T9>)((T1 val1, T2 val2, T3 val3, T4 val4, T5 val5, T6 val6, T7 val7, T8 val8, T9 val9) =>
                         {
-                            var binding = EasyJection.Container.Instance[this.GetType()];
+                            var instanceType = this.GetType(); var binding = EasyJection.Container.Instance[instanceType];
                             var hookedMethod = binding[typeof(HookedMethodVoid<T1, T2, T3, T4, T5, T6, T7, T8, T9>)][1];
-                            hookedMethod.HookManager.InvokeOriginalMethodVoid(this, new object[] { val1, val2, val3, val4, val5, val6, val7, val8, val9 });
+                            hookedMethod.HookManager.InvokeOriginalMethodVoid(binding, this, new object[] { val1, val2, val3, val4, val5, val6, val7, val8, val9 });
                         })).Method;
                     }
                     break;

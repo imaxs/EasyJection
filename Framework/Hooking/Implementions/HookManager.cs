@@ -23,7 +23,10 @@ using System.Runtime.CompilerServices;
 
 namespace EasyJection.Hooking
 {
+    using EasyJection.Binding;
+    using System.Collections.Generic;
     using Types;
+    using static UnityEngine.UI.Image;
 
     public sealed class HookManager : Disposable, IHookManager
     {
@@ -74,6 +77,7 @@ namespace EasyJection.Hooking
 
         public HookManager(IMethodInvokeData invokeData, MethodBase hooked, MethodBase original, bool HookImmediately = true)
         {
+            this.isHooked = false;
             this.bytes = new byte[Architecture.SIZE_X64];
             this.hookedMethod = hooked;
             this.originalMethod = original;
@@ -82,18 +86,24 @@ namespace EasyJection.Hooking
             RuntimeHelpers.PrepareMethod(originalMethod.MethodHandle);
             RuntimeHelpers.PrepareMethod(hookedMethod.MethodHandle);
 #endif
-            if (HookImmediately) // <-- variable disables the hook
+            if (HookImmediately)
                 this.Hook();
         }
 
         /// NOTE: If the values of the arguments for a method were specified on binding,
         /// they will replace the original arguments passed to the method when it was called.
-        public object InvokeOriginalMethodResult(object instance, object[] originalArguments = null)
+        public object InvokeOriginalMethodResult(IBindingData bindingData, object instance, object[] originalArguments = null)
         {
+            var scopedInstances = new Dictionary<System.Type, object>()
+            {
+                { bindingData.Type, instance }
+            };
+
             // Resolve dependency for each parameter specified if its value is null
             var arguments = Container.Instance.Resolve(
                 invokeData.ArgumentsObjects ?? originalArguments,
-                invokeData.ArgumentTypes);
+                invokeData.ArgumentTypes,
+                scopedInstances);
 
             // Disabling a hook before calling the original method
             this.Unhook();
@@ -102,7 +112,7 @@ namespace EasyJection.Hooking
             object returnValue = this.originalMethod.Invoke(instance, arguments);
 
             // Dependencies Injection
-            Container.Instance.Inject(returnValue);
+            Container.Instance.Inject(returnValue, scopedInstances);
 
             // Enable the hook
             this.Hook();
@@ -112,12 +122,18 @@ namespace EasyJection.Hooking
 
         /// NOTE: If the values of the arguments for a method were specified on binding,
         /// they will replace the original arguments passed to the method when it was called.
-        public void InvokeOriginalMethodVoid(object instance, object[] originalArguments = null)
+        public void InvokeOriginalMethodVoid(IBindingData bindingData, object instance, object[] originalArguments = null)
         {
+            var scopedInstances = new Dictionary<System.Type, object>()
+            {
+                {  bindingData.Type, instance }
+            };
+
             // Resolve dependency for each parameter specified if its value is null
             var arguments = Container.Instance.Resolve(
                 invokeData.ArgumentsObjects ?? originalArguments,
-                invokeData.ArgumentTypes);
+                invokeData.ArgumentTypes,
+                scopedInstances);
 
             // Disabling a hook before calling the original method
             this.Unhook();
@@ -126,7 +142,7 @@ namespace EasyJection.Hooking
             this.originalMethod.Invoke(instance, arguments);
 
             // Dependencies Injection
-            Container.Instance.Inject(instance);
+            Container.Instance.Inject(bindingData, instance, scopedInstances);
 
             // Enable the hook
             this.Hook();

@@ -17,6 +17,7 @@
  * limitations under the License.
  */
 
+using EasyJection.Binding;
 using System;
 
 namespace EasyJection.Hooking
@@ -27,8 +28,8 @@ namespace EasyJection.Hooking
     public interface IHookManager : IDisposable
     {
         IMethodInvokeData InvokeData { get; }
-        object InvokeOriginalMethodResult(object instance, object[] originalArguments = null);
-        void InvokeOriginalMethodVoid(object instance, object[] originalArguments = null);
+        object InvokeOriginalMethodResult(IBindingData bindingData, object instance, object[] originalArguments = null);
+        void InvokeOriginalMethodVoid(IBindingData bindingData, object instance, object[] originalArguments = null);
         void Hook();
         void Unhook();
     }

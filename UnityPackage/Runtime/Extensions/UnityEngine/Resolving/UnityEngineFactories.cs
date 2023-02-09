@@ -28,7 +28,6 @@ namespace EasyJection.Extensions
 #if UNITY_ENGINE_AVAILABLE
     using EasyJection.Binding;
     using EasyJection.Types;
-    using Resolving;
     using UnityEngine;
 
     public class UnityEngineGameObjectInstantiateFactory : IFactory

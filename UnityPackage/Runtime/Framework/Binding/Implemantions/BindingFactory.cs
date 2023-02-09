@@ -59,6 +59,9 @@ namespace EasyJection.Binding
             if (value != null)
                 this.PreCaching(value as Type ?? value.GetType());
 
+            var bindInjection = this.CreateBindingInjectionFactoryProvider(binding);
+            bindInjection.Constructor(true);
+
             return this.CreateBindingConditionFactoryProvider(binding);
         }
 

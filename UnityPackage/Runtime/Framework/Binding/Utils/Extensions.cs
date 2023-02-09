@@ -19,8 +19,6 @@
 
 using System;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using UnityEngine;
 
 namespace EasyJection.Binding.Extensions
 {
@@ -71,13 +69,15 @@ namespace EasyJection.Binding.Extensions
 
         public static ConstructorInfo FindDefaultConstructor(this Type type)
         {
-            var ctors = type.GetConstructors(   BindingFlags.FlattenHierarchy |
-                                                BindingFlags.Public |
+            var ctors = type.GetConstructors(   BindingFlags.Public |
                                                 BindingFlags.NonPublic |
                                                 BindingFlags.Instance);
 
+            
+
             for (int index = 0; index < ctors.Length; index++)
             {
+                UnityEngine.Debug.Log("[" + ctors[index].DeclaringType.Name + "]: ");
                 if (ctors[index].GetParameters().Length == 0)
                     return ctors[index];
             }

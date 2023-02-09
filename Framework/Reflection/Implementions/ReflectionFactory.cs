@@ -17,13 +17,19 @@
  * limitations under the License.
  */
 
+#if UNITY_EDITOR || UNITY_STANDALONE || UNITY_WII || UNITY_IOS || UNITY_ANDROID || UNITY_PS4 || UNITY_XBOXONE || UNITY_TIZEN || UNITY_TVOS || UNITY_WSA || UNITY_WEBGL || UNITY_FACEBOOK
+#define UNITY_ENGINE_AVAILABLE
+#endif
+
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace EasyJection.Reflection
 {
+    using Binding.Extensions;
 #pragma warning disable 0618
     public class ReflectionFactory : IReflectionFactory
     {
@@ -65,7 +71,7 @@ namespace EasyJection.Reflection
             return methodParameters;
         }
 
-        private ConstructorInfo[] GetConstructors(System.Reflection.ConstructorInfo[] constructors) 
+        private ConstructorInfo[] GetConstructors(System.Reflection.ConstructorInfo[] constructors)
         {
             var ctors = new ConstructorInfo[constructors.Length];
 
@@ -85,13 +91,25 @@ namespace EasyJection.Reflection
         #endregion
         private (ConstructorInfo[] ctors, ParameterInfo[][] pars) GetConstructors(Type type)
         {
-            var ctors = type.GetConstructors( BindingFlags.FlattenHierarchy |
-                                              BindingFlags.Public | 
-                                              BindingFlags.NonPublic | 
-                                              BindingFlags.Instance);
+            return GetConstructors(type, new List<System.Reflection.ConstructorInfo>(capacity: 16));
+        }
 
-            return (ctors: GetConstructors(ctors),
-                    pars: GetParameters(ctors));
+        private (ConstructorInfo[] ctors, ParameterInfo[][] pars) GetConstructors(Type type, List<System.Reflection.ConstructorInfo> list)
+        {
+            var ctors = type.GetConstructors(   BindingFlags.Public |
+                                                BindingFlags.NonPublic |
+                                                BindingFlags.Instance);
+
+            list.AddRange(ctors);
+
+            //var baseType = type.BaseType();
+            //if (baseType != null && baseType != typeof(Object))
+            //    return GetConstructors(baseType, list);
+
+            var arr = list.ToArray();
+
+            return (ctors: GetConstructors(arr),
+                    pars: GetParameters(arr));
         }
 
         #region Comment
@@ -102,10 +120,9 @@ namespace EasyJection.Reflection
         #endregion
         private (MethodInfo[] methods, ParameterInfo[][] pars) GetMethods(Type type)
         {
-            var methods = type.GetMethods(  BindingFlags.FlattenHierarchy |
-                                            BindingFlags.Public | 
+            var methods = type.GetMethods(BindingFlags.FlattenHierarchy |
+                                            BindingFlags.Public |
                                             BindingFlags.NonPublic |
-                                            BindingFlags.Static |
                                             BindingFlags.Instance);
 
             var methodsList = new List<MethodInfo>(capacity: methods.Length);
@@ -124,24 +141,45 @@ namespace EasyJection.Reflection
                     pars: argumentsList.ToArray());
         }
 
+        //private (ConstructorInfo[] ctors, ParameterInfo[][] pars) GetMethods(Type type, List<System.Reflection.MethodInfo> list)
+        //{
+
+        //}
+
         #region Comment
         /// <summary>
         /// Get information about the fields.
         /// </summary>
         /// <returns>The array of fields.</returns>
-        #endregion 
+        #endregion
         private AccessoriesInfo[] GetFields(Type type)
         {
-            var fields = type.GetFields(BindingFlags.Public | 
-                                        BindingFlags.NonPublic | 
-                                        BindingFlags.Instance);
+            return GetFields(type, new List<AccessoriesInfo>(capacity: 16));
+        }
 
-            AccessoriesInfo[] arr = new AccessoriesInfo[fields.Length];
+        private AccessoriesInfo[] GetFields(Type type, IList<AccessoriesInfo> list)
+        {
+            var fields = type.GetFields(BindingFlags.Public |
+                                        BindingFlags.NonPublic |
+                                        BindingFlags.Instance |
+                                        BindingFlags.DeclaredOnly);
 
-            for (int i = 0; i < arr.Length; i++)
-                arr[i] = new AccessoriesInfo(fields[i]);
+            for (int i = 0; i < fields.Length; i++)
+                list.Add(new AccessoriesInfo(fields[i]));
 
-            return arr;
+            var baseType = type.BaseType();
+            if  (baseType != null && baseType != typeof(Object)
+#if UNITY_ENGINE_AVAILABLE
+                && baseType != EasyJection.Extensions.UnityEngineBinding.TYPE_MONOBEHAVIOUR
+                && baseType != EasyJection.Extensions.UnityEngineBinding.TYPE_GAMEOBJECT
+                && baseType != EasyJection.Extensions.UnityEngineBinding.TYPE_COMPONENT
+#endif
+             )
+            {
+                return GetFields(baseType, list);
+            }
+
+            return list.ToArray();
         }
 
         #region Comment
@@ -152,16 +190,32 @@ namespace EasyJection.Reflection
         #endregion
         private AccessoriesInfo[] GetProperties(Type type)
         {
-            var props = type.GetProperties( BindingFlags.Public |
+            return GetProperties(type, new List<AccessoriesInfo>(capacity: 16));
+        }
+
+        private AccessoriesInfo[] GetProperties(Type type, IList<AccessoriesInfo> list)
+        {
+            var props = type.GetProperties(BindingFlags.Public |
                                             BindingFlags.NonPublic |
-                                            BindingFlags.Instance);
+                                            BindingFlags.Instance |
+                                            BindingFlags.DeclaredOnly);
 
-            AccessoriesInfo[] arr = new AccessoriesInfo[props.Length];
+            for (int i = 0; i < props.Length; i++)
+                list.Add(new AccessoriesInfo(props[i]));
 
-            for (int i = 0; i < arr.Length; i++)
-                arr[i] = new AccessoriesInfo(props[i]);
+            var baseType = type.BaseType();
+            if (baseType != null && baseType != typeof(Object)
+#if UNITY_ENGINE_AVAILABLE
+                && baseType != EasyJection.Extensions.UnityEngineBinding.TYPE_MONOBEHAVIOUR
+                && baseType != EasyJection.Extensions.UnityEngineBinding.TYPE_GAMEOBJECT
+                && baseType != EasyJection.Extensions.UnityEngineBinding.TYPE_COMPONENT
+#endif
+             )
+            {
+                return GetProperties(baseType, list);
+            }
 
-            return arr;
+            return list.ToArray();
         }
     }
 }

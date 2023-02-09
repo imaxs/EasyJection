@@ -25,6 +25,7 @@ namespace EasyJection
     using Binding;
     using Reflection;
     using System.Runtime.CompilerServices;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Implementation of the <see cref="IContainer"/> interface
@@ -55,7 +56,7 @@ namespace EasyJection
         {
             lock (_lock) 
             {
-                Container._instance.Clear();
+                Container._instance?.Clear();
             }
         }
 
@@ -111,27 +112,45 @@ namespace EasyJection
             this.resolver.Inject(instance);
         }
 
+        /// <inheritdoc cref="IResolver.Inject(object, IDictionary{Type, object})"/>
+        public void Inject(object instance, IDictionary<Type, object> scopedInstances)
+        {
+            this.resolver.Inject(instance, scopedInstances);
+        }
+
+        /// <inheritdoc cref="IResolver.Inject(Type, object, IDictionary{Type, object})"/>
+        public void Inject(Type instanceType, object instance, IDictionary<Type, object> scopedInstances)
+        {
+            this.resolver.Inject(instanceType, instance, scopedInstances);
+        }
+
+        /// <inheritdoc cref="IResolver.Inject(IBindingData, object, IDictionary{Type, object})"/>
+        public void Inject(IBindingData bindingData, object instance, IDictionary<Type, object> scopedInstances)
+        {
+            this.resolver.Inject(bindingData, instance, scopedInstances);
+        }
+
         public IBindingData this[Type type]
         {
             get => this.binder.GetBindingFor(type);
         }
 
         /// <inheritdoc cref="IResolver.Resolve{T}"/>
-        public T Resolve<T>()
+        public T Resolve<T>(IDictionary<Type, object> scopedInstances)
         {
-            return (T)this.resolver.Resolve(typeof(T));
+            return (T)this.resolver.Resolve(typeof(T), scopedInstances);
         }
 
         /// <inheritdoc cref="IResolver.Resolve(Type)"/>
-        public object Resolve(Type type)
+        public object Resolve(Type type, IDictionary<Type, object> scopedInstances)
         {
-            return this.resolver.Resolve(type);
+            return this.resolver.Resolve(type, scopedInstances);
         }
 
         /// <inheritdoc cref="IResolver.Resolve(object[], Type[])"/>
-        public object[] Resolve(object[] objects, Type[] types)
+        public object[] Resolve(object[] objects, Type[] types, IDictionary<Type, object> scopedInstances)
         {
-            return this.resolver.Resolve(objects, types);
+            return this.resolver.Resolve(objects, types, scopedInstances);
         }
 
         /// <inheritdoc cref="IContainer.Clear"/>

@@ -37,13 +37,16 @@ namespace EasyJection.Extensions
     /// </summary>
     public static class UnityEngineBinding
     {
+        public static Type TYPE_MONOBEHAVIOUR;
+        public static Type TYPE_GAMEOBJECT;
+        public static Type TYPE_COMPONENT;
+
         private static IFactory GameObjectFactory;
         private static IFactory ComponentFactory;
-        private static Type TYPE_GAMEOBJECT;
-        private static Type TYPE_COMPONENT;
 
         static UnityEngineBinding()
         {
+            TYPE_MONOBEHAVIOUR = typeof(MonoBehaviour);
             TYPE_COMPONENT = typeof(Component);
             TYPE_GAMEOBJECT = typeof(GameObject);
             GameObjectFactory = new UnityEngineGameObjectInstantiateFactory();

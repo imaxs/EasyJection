@@ -25,6 +25,7 @@ namespace EasyJection.Resolving
     using EasyJection.Hooking;
     using EasyJection.Types;
     using Reflection;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Implementation of the <see cref="IResolver"/> interface
@@ -48,21 +49,54 @@ namespace EasyJection.Resolving
             this.binder = binder;
         }
 
+        /// <inheritdoc cref="IResolver.Inject(IBindingData, object, IDictionary{Type, object})"/>
+        public void Inject(IBindingData bindingData, object instance, IDictionary<Type, object> scopedInstances)
+        {
+            this.Inject(bindingData.Type, instance, scopedInstances);
+        }
+
+        /// <inheritdoc cref="IResolver.Inject(Type, object, IDictionary{Type, object})"/>
+        public void Inject(Type instanceType, object instance, IDictionary<Type, object> scopedInstances)
+        {
+            // Add the first item to it.
+            if (!scopedInstances.ContainsKey(instanceType))
+                scopedInstances.Add(instanceType, instance);
+
+            var reflectedData = this.cache[instanceType];
+            this.Inject(instance, reflectedData, scopedInstances);
+
+            scopedInstances.Clear();
+        }
+
+        /// <inheritdoc cref="IResolver.Inject(object, IDictionary{Type, object})"/>
+        public void Inject(object instance, IDictionary<Type, object> scopedInstances)
+        {
+            // Get instance type
+            var instanceType = instance.GetType();
+
+            this.Inject(instanceType, instance, scopedInstances);
+        }
+
         /// <inheritdoc cref="IResolver.Inject(object)"/>
         public void Inject(object instance)
         {
-            var reflectedData = this.cache[instance.GetType()];
-            this.Inject(instance, reflectedData);
+            // Get instance type
+            var instanceType = instance.GetType();
+
+            // Create a scoped dictionary of instances
+            var scopedInstances = new Dictionary<Type, object>();
+
+            this.Inject(instanceType, instance, scopedInstances);
         }
 
         /// <inheritdoc cref="IResolver.Resolve{T}"/>
-        public T Resolve<T>()
+        public T Resolve<T>(IDictionary<Type, object> scopedInstances)
         {
-            return (T)Resolve(typeof(T));
+            return (T)Resolve(typeof(T), scopedInstances);
         }
 
         /// <inheritdoc cref="IResolver.Resolve(Type)"/>
-        public object Resolve(Type type)
+        public object Resolve(Type type, IDictionary<Type, object> scopedInstances)
         {
             var bindingData = this.binder.GetBindingFor(type);
 
@@ -77,7 +111,7 @@ namespace EasyJection.Resolving
                     return bindingData.Value;
             }
 
-            object instance = this.Instantiate(bindingData.Value as Type, bindingData);
+            object instance = this.Instantiate(bindingData.Value as Type, bindingData, scopedInstances);
 
             if (bindingData.InstanceType.HasFlag(BindingInstanceType.Singleton))
             {
@@ -95,7 +129,7 @@ namespace EasyJection.Resolving
         }
 
         /// <inheritdoc cref="IResolver.Resolve(object[], Type[])"/>
-        public object[] Resolve(object[] objects, Type[] types)
+        public object[] Resolve(object[] objects, Type[] types, IDictionary<Type, object> scopedInstances)
         {
             if (objects == null)
                 return null;
@@ -103,7 +137,7 @@ namespace EasyJection.Resolving
             int length = objects.Length;
             var resolvedObjects = new object[length];
             for (int i = 0; i < length; i++)
-                resolvedObjects[i] = objects[i] ?? this.Resolve(types[i]);
+                resolvedObjects[i] = objects[i] ?? this.Resolve(types[i], scopedInstances);
 
             return resolvedObjects;
         }
@@ -112,7 +146,7 @@ namespace EasyJection.Resolving
         /// Instantiate and resolve dependencies for the specified type.
         /// </summary>
         /// <param name="type">The type to be instantiated.</param>
-        protected object Instantiate(Type instanceType, IBindingData bindingData)
+        protected object Instantiate(Type instanceType, IBindingData bindingData, IDictionary<Type, object> scopedInstances)
         {
             if (instanceType.IsInterface)
                 throw new Exception(
@@ -148,7 +182,7 @@ namespace EasyJection.Resolving
                     var arguments = new object[length];
                     for (int i = 0; i < length; i++)
                         arguments[i] = invokeData.ArgumentsObjects[i] ?? 
-                                       this.Resolve(invokeData.ArgumentTypes[i]);
+                                       this.Resolve(invokeData.ArgumentTypes[i], scopedInstances);
 
                     // Use the specified parameterized constructor
                     instance = constructorInfo.ctorArgsInvoke(arguments);
@@ -158,8 +192,11 @@ namespace EasyJection.Resolving
                 hookManager.Hook();
             }
 
+            // Add an item to the scoped dictionary
+            scopedInstances.Add(bindingData.Type, instance);
+
             // Dependency Injection
-            this.Inject(instance, this.cache[instanceType]);
+            this.Inject(instance, this.cache[instanceType], scopedInstances);
 
             return instance;
         }
@@ -169,13 +206,13 @@ namespace EasyJection.Resolving
         /// </summary>
         /// <param name="instance">The instance to have its dependencies resolved.</param>
         /// <param name="reflectedData">The reflected class related to the <paramref name="instance"/>.</param>
-        protected void Inject(object instance, IReflectedData reflectedData)
+        protected void Inject(object instance, IReflectedData reflectedData, IDictionary<Type, object> scopedInstances)
         {
             if (reflectedData.FieldsInfo.Length > 0)
-                this.InjectFields(instance, reflectedData.FieldsInfo);
+                this.InjectFields(instance, reflectedData.FieldsInfo, scopedInstances);
 
             if (reflectedData.PropertiesInfo.Length > 0)
-                this.InjectProperties(instance, reflectedData.PropertiesInfo);
+                this.InjectProperties(instance, reflectedData.PropertiesInfo, scopedInstances);
         }
 
         /// <summary>
@@ -186,7 +223,7 @@ namespace EasyJection.Resolving
         /// </remarks>
         /// <param name="instance">The instance to have its dependencies resolved.</param>
         /// <param name="fields">Public fields of the type that can receive injection.</param>
-        protected void InjectFields(object instance, AccessoriesInfo[] fields)
+        protected void InjectFields(object instance, AccessoriesInfo[] fields, IDictionary<Type, object> scopedInstances)
         {
             for (int fieldIndex = 0; fieldIndex < fields.Length; fieldIndex++)
             {
@@ -199,7 +236,7 @@ namespace EasyJection.Resolving
                 {
                     try
                     {
-                        var valueToSet = this.Resolve(field.Type);
+                        var valueToSet = scopedInstances.ContainsKey(field.Type) ? scopedInstances[field.Type] : this.Resolve(field.Type, scopedInstances);
                         field.InvokeSetter(instance, valueToSet);
                     }
                     catch (Exception exception)
@@ -219,7 +256,7 @@ namespace EasyJection.Resolving
         /// </remarks>
         /// <param name="instance">The instance to have its dependencies resolved.</param>
         /// <param name="properties">Public properties of the type that can receive injection.</param>
-        protected void InjectProperties(object instance, AccessoriesInfo[] properties)
+        protected void InjectProperties(object instance, AccessoriesInfo[] properties, IDictionary<Type, object> scopedInstances)
         {
             for (int propertyIndex = 0; propertyIndex < properties.Length; propertyIndex++)
             {
@@ -233,7 +270,7 @@ namespace EasyJection.Resolving
                 {
                     try
                     {
-                        var valueToSet = this.Resolve(property.Type);
+                        var valueToSet = scopedInstances.ContainsKey(property.Type) ? scopedInstances[property.Type] : this.Resolve(property.Type, scopedInstances);
                         property.InvokeSetter(instance, valueToSet);
                     }
                     catch (Exception exception)
