@@ -1,5 +1,4 @@
 <h3>EasyJection Framework</h3>
-<h4>UnityPackage</h4>
 Copyright © 2021 Max Karepin<br/>
 Author: Max Karepin (http://github.com/imaxs/)
 
