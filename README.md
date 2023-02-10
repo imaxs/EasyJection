@@ -4,7 +4,7 @@
 
 ![GitHub](https://img.shields.io/github/license/imaxs/EasyJection)
 ![GitHub issues](https://img.shields.io/github/issues/imaxs/EasyJection?style=flat-square)
-![GitHub last commit (branch)](https://img.shields.io/github/last-commit/imaxs/EasyJection/main)
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/imaxs/EasyJection/develop)
 
 ✅ | <b>➡️ Without using any attributes for injection</b>
 :---: | :---
