@@ -22,6 +22,21 @@
   * [Motivation](#-motivation)
   * [Installation](#-installation)
   * [Usage](#-usage)
+     * [General notes](#general-notes)
+     * [DI / IoC container](#di--ioc-container)
+     * [Bindings](#bindings)
+       * [Available Bindings](#available-bindings)
+         * [To Implementation](#-to-implementation)
+         * [To Singleton](#-to-singleton)
+         * [To Factory](#-to-factory)
+         * [To Instance](#-to-instance)
+         * [To Self](#-to-self)
+     * [Injection Conditions](#injection-conditions)
+         * [Constructor Injection](#-constructor-injection)
+         * [Method Injection](#-method-injection)
+           * [Non-return Method (MethodVoid)](#non-return-method-methodvoid)
+           * [Method with result (MethodResult)](#method-with-result-methodresult) 
+         * [Injection Notes](#injection-notes)
   * [Change Log](#-change-log)
   * [Contributing](#-contributing)
   * [License](#-license)
@@ -357,6 +372,11 @@ You can use the path query parameter in the Git URL to notify the Package Manage
 - Import EasyJection.X.X.X.unitypackage
 
 ## 🎲 Usage ##
+### General notes ###
+
+ - A dependency will be resolved for a field, property, and parameter if its value is NULL.
+ - If an instance is not found, it will be resolved to NULL.
+ 
 ### DI / IoC container ###
 
 DI container (a.k.a IoC Container) is a key feature of the dependency injection implementation. The container creates an object of the specified type and then automatically injects all the dependency objects through a constructor, property, field or method at runtime. This is done automatically by the DI (IoC) container so that you don’t have to create and manage these dependency objects manually.
@@ -368,172 +388,72 @@ Container container = new Container();
 ```
 
 ### Bindings ###
-The created container should then 'know' how to create all the object instances in your application, by recursively resolving all dependencies for a given object. You have to create bindings. Binding is the action of linking a type to another type or instance. EasyJection makes it simple by providing different ways to create them. Each binding must be performed to a specific key type by calling the `Bind()` method.
-```csharp
-// Binding some interface to its class implementation
-container.Bind<ISomeInterface>().To<SomeClass>();
-```
-```csharp
-// Binding some interface to its struct implementation
-container.Bind<IStructInterface>().To<SomeStruct>();
-```
-
-#### Available Bindings ####
-
-##### To Implementation Type ####
-```csharp
-// A new instance is created each time a dependency needs to be resolved
-container.Binder.Bind<ISomeInterface>().To<SomeClass>();
-```
-##### To Single #####
-```csharp
-// A single instance of the implementation type is created
-container.Bind<ISomeInterface>()
-                .To<SomeClass>()
-                .AsSingle();
-```
-##### To Self #####
-```csharp
-// Binding the type to the transient of itself
-container.Bind<SomeClass>().ToSelf();
-```
-#### Conditions ####
-If you don’t provide a constructor for your class, a new instance is created using the default constructor `new()`, C# creates one and sets member variables to the default values. But if you decide to create an instance through `new()` (with or without arguments) you need to provide a constructor with `[MethodImpl(MethodImplOptions.NoInlining)]` attribute. `Note that a value type (C# struct) can't have a constructor with no parameters.` Otherwise you can specify a constructor to use to instantiate your type, this is possible in several ways:
-##### Passing values to a constructor #####
-```csharp
-// A ValueType constructor with 3 arguments (parameters). The maximum number of parameters is 9.
-// Instances will be created with the specified argument values
-container.Bind<Vector2>()
-                .ToSelf()
-                .ConstructionMethod()
-                .WithArguments<int, int>(4, 2);
-// or
-container.Bind<ISomeInterface>()
-                .To<SomeClass>()
-                .ConstructionMethod()
-                .WithArguments(new object[]{ "Some Text", 2021 });
-```
-You can pass NULL as a constructor parameter if the specific parameter is a reference type or interface. The injection will be done into constructor parameters and NULL will be changed to a value of the specific implementation contained in the container.
-```csharp
-// A ValueType constructor with 3 arguments (parameters). The maximum number of parameters is 9.
-// Instances will be created with the specified argument values
-// The injection will be done into constructor parameters
-container.Binder.Bind<ISomeInterface>()
-                .To<SomeClass>()
-                .ConstructionMethod()
-                .WithArguments<IArgumentInterface, string, int>(null, "Some Text", 2021);
-```
-##### Without passing values to a constructor #####
-A function/method signature include parameters and their types.
-```csharp
-// Constructor with 1 argument (parameter). The maximum number of parameters is 9
-// The injection will be done into constructor.
-container.Binder.Bind<ISomeInterface>()
-                .To<SomeClass>()
-                .ConstructionMethod()
-                .Signature<Vector2>();
-```
-```csharp
-// Same as the above code
-container.Binder.Bind<ISomeInterface>()
-                .To<SomeClass>()
-                .Signature<Vector2>();
-```
-By the name of the method that is used as the constructor. The injection will be done into an instance when this method is called. With the way Unity works, you're supposed to use *Awake()* and *Start()* instead of a constructor to handle initialization behavior.
-```csharp
-// A Method named "Awake"
-container.Binder.Bind<MonoBehaviourGameObject>()
-                .ToSelf()
-                .ConstructionMethod("Awake");
-```
-### Injection ###
-#### Injection via Constructor ####
-```csharp
-// The class whose instance requires dependency injection
-public class AppClass
+The created container should then 'know' how to create all the object instances in your application, by recursively resolving all dependencies for a given object. Therefore, you need to create bindings. Binding is the action of linking a type to another type or instance. EasyJection makes it simple by providing different ways to create them. Each binding must be performed to a specific key type by calling the `Bind()` method. For example, given the following class:
+ 
+ ```csharp
+ // The class implements an interface
+public SomeClass : ISomeInterface
 {
-    // The property is set immediately when the constructor method is called.
-    private ISomeInterface m_someDependence;
-    
-    // ⚠️Specifies that the method cannot be inlined.
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    public AppClass() { }
+    // ... some code implementing the interface
 }
-```
-```csharp
-// By default, injection into a class instance is done when the constructor is called.
-container.Binder.Bind<AppClass>().ToSelf();
-container.ResolveAll();
-```
-```csharp
-// The instance of App type that requires dependency injection.
-AppClass app = new AppClass();
-```
-#### Injection via the Hook method  ####
-```csharp
-// The class whose instance requires dependency injection
-public class AppClass
+
+// The class that requires a dependency
+public class Foo
 {
-    // The property is set immediately when the "Awake" method is called.
-    private ISomeInterface m_someDependence;
-    // Almost like in MonoBehaviour ;)
-    public void Awake()
+    private ISomeInterface instance;
+
+    public Foo(ISomeInterface instance)
     {
-     ...
+        this.instance = instance;
     }
 }
 ```
-```csharp
-// Specifies the name of the method performs the injection when its called.
-container.Binder.Bind<AppClass>()
-                .ToSelf()
-                .ConstructionMethod("Awake");
-container.ResolveAll();
-```
-```csharp
-// The instance of App type that requires dependency injection.
-AppClass app = new AppClass();
-// Calling the method
-app.Awake();
-```
-#### Manually Injection ####
-```csharp
-public class AppClass
-{
-    // The property is set immediately when calling DI.Inject
-    private ISomeInterface m_someDependence;
-}
-```
-```csharp
-// Injection via the default constructor
-container.Binder.Bind<AppClass>()
-                .ToSelf()
-                .ManualInjectionOnly();
-container.ResolveAll();
-```
-```csharp
-// The instance of App type that requires dependency injection
-AppClass app = new AppClass();
-// Injection
-container.DI.Inject(app);
-```
-### Injection conditions ###
+You can bind dependencies using the following:
  
-One of the most basic feature of EasyJection is adding injection call at the beginning and end of target methods/constructors. This applies to all cases, except for manual injection. As mentioned above, by default injection is done via constructor or method.
-
-You can set the type of call sequence:
 ```csharp
-container.Binder.Bind<IRotate>()
-                .To<Rotate>()
-                .Sequence(SequenceType.InjectionBefore);
+// Binding some interface to its class implementation
+container.Bind<ISomeInterface>().To<SomeClass>();
+container.Bind<Foo>().ToSelf(UseDefaultConstructor: true);
 ```
-The `SequenceType` enum has two value:
- - `InjectionBefore` — The injection is done before the actual body of the method.
- - `InjectionAfter` — The injection is done after the actual body of the method.
-
-By default it is set to `SequenceType.InjectionBefore`
+This is a simple way to bind some interface to its class implementation. This means that any class that requires the `ISomeInterface` interface (like Foo) will be given the same instance of type `SomeClass`.
  
-In C# a method declaration consists of the following components as follows:
+Below is the full binding format:
+
+```csharp
+  // Binding an interface to an implementation type
+  container.Bind<KeyInterfaceType>()
+           .To<ImplementationType>()
+           .InjectionTo()
+           .MethodVoid<T1...T9>(methodName).WithArguments<T1...T9>(T1 arg1, ...T9 arg9)
+           .MethodResult<T1...T9, TResult>(methodName).WithArguments<T1..T9>(T1 arg1, ...T9 arg9)
+           .Constructor<T1...T9>(UseForInstantiation: True | False).WithArguments<T1...T9>(T1 arg1, ...T9 arg9);
+```
+Where:
+
+ - *KeyInterfaceType* — The type of binding for.
+ - *ImplementationType* — The type to be bound to.
+ - `InjectionTo()` — allows you to set the injection conditions.
+ - `MethodVoid<T1...T9>(methodName)` — field, property and parameters injection occurs immediately when the non-return method corresponding to the specified method signature is called.
+    - *<T1...T9>* — types of parameters of a non-return method. Maximum of 9 parameters, where T1...T9 their types.
+    - *methodName* — the name of a non-return method.
+ - `MethodResult<T1...T9, TResult>(methodName)` — field, property and parameters injection occurs immediately when the method corresponding to the specified method signature is called.
+     - *<T1...T9, TResult>* — types of method parameters. A maximum of 9 parameters, where T1...T9 their types and the return value is the type specified by the TResult.
+     - *methodName* — the name of a method.
+ - `Constructor<T1...T9>(UseForInstantiation: True | False)` — field, property and parameters injection occurs immediately when the constructor corresponding to the specified signature is called.
+     - *<T1...T9>* — types of parameters of a constructor.
+     - *UseForInstantiation* — if True, the container will use this constructor to create an instance, otherwise it will use the default constructor.
+ - `WithArguments<T1...T9>(T1 arg1, ...T9 arg9)` — arguments used to pass to the called method or constructor.
+     - *<T1...T9>* — types of arguments passed. 
+        - ⚠️ Attention:
+           - _The types must fully match the signature of a method or constructor._
+           - _The original arguments passed to the called method will be replaced with the specified arguments from the binding._
+ 
+ What is a method signature?
+ 
+ Section 3.6 of the C# Language Specification (version 4.0) contains the following:
+> The signature of a method consists of the name of the method, the number of type parameters and the type and kind (value, reference, or output) of each of its formal parameters, considered in the order left to right. For these purposes, any type parameter of the method that occurs in the type of a formal parameter is identified not by its name, but by its ordinal position in the type argument list of the method. The signature of a method specifically does not include the return type, the params modifier that may be specified for the right-most parameter, nor the optional type parameter constraints.
+
+The method declaration consists of the following:
 
  <img src="./Documentation/Images/method.png" width="60%"/>
  
@@ -542,7 +462,179 @@ In C# a method declaration consists of the following components as follows:
  - **Return type** — It defines the data type returned by the method. It depends upon user as it may also return void value i.e return nothing
  - **Body of the Method** — It refers to the line of code of tasks to be performed by the method during its execution. It is enclosed between braces.
  - **Parameter list** — Comma separated list of the input parameters are defined, preceded with their data type, within the enclosed parenthesis. If there are no parameters, then empty parentheses () have to use out.
+
+Let's look at all the available bindings provided by EasyJection.
  
+#### Available Bindings ####
+There is three types of available bindings:
+ 
+- **Transient**  —  a new instance is created each time a dependency needs to be resolved.
+- **Singleton**  —  one instance is created and used for any dependencies.
+- **Factory**  — creates the instance and returns it.
+ 
+#### 🔘 To Implementation ####
+```csharp
+// A new instance is created each time a dependency needs to be resolved
+container.Binder.Bind<ISomeInterface>().To<SomeClass>();
+```
+
+#### 🔘 To Singleton ####
+Binds the key type to a singleton instance of the implementation type. The key must be a class.
+```csharp
+container.Bind<ISomeInterface>()
+         .ToSingleton<SomeClass>(UseDefaultConstructor: True | False);
+```
+or bind the type as a singleton to itself.  
+```csharp
+// The key type must be a class!
+container.Bind<SomeClass>()
+         .ToSingleton(UseDefaultConstructor: True | False);
+```
+Where:
+ - *UseDefaultConstructor* — If True, the injection occurs each time the default constructor is called (from `new()`).
+ 
+#### 🔘 To Factory ####
+When you need to handle object instantiation manually, you can create a factory class by inheriting it from `EasyJection.Types.IFactory` interface.
+```csharp
+public class MyFactory : EasyJection.Types.IFactory {
+     /// <summary>
+     /// Creates an instance of an object of the type created by the factory.
+     /// </summary>
+     /// <param name="bindingData">Instance implementing the IBindingData interface</param>
+     /// <returns>The instance.</returns>
+     public object CreateInstance(IBindingData bindingData = null) {
+        //Instantiate and return the object.
+        var myObject = new SomeClass();
+        return myObject;
+     }
+}
+```
+There are two ways to bind the factory.
+```csharp
+// #1 The container creates the factory itself.
+container.Bind<ISomeInterface>()
+         .ToFactory<MyFactory>(UseDefaultConstructor: True | False);
+ 
+// #2 or bind it to an existing factory instance.
+container.Bind<ISomeInterface>()
+         .ToFactory<MyFactory>(factoryInstance);
+```
+Where:
+ - *UseDefaultConstructor* — If True, the injection occurs each time the default constructor is called (from `new()`).
+ 
+#### 🔘 To Instance ####
+You can also bind the key type to an existing instance.
+```csharp
+container.Bind<ISomeInterface>()
+         .ToInstance<SomeClass>(someClassInstance);
+``` 
+ 
+#### 🔘 To Self ####
+```csharp
+// Binds the key type to a transient of itself. The key must be a class.
+container.Bind<SomeClass>().ToSelf(UseDefaultConstructor: True | False);
+```
+ Where:
+ - *UseDefaultConstructor* — If True, the injection occurs each time the default constructor is called (from `new()`).
+ 
+### Injection Conditions ###
+EasyJection provides injection through a constructor or method call. Constructor injection forces the dependency to only be resolved once, at instance creation, which is usually what you want. Inject methods are the recommended approach for MonoBehaviours (e.g. 'Awake' and 'Start' methods). Injection conditions are set by calling the `InjectionTo()` method. In order to specify a constructor or method for injection, you need to specify its signature.
+
+EasyJection will also always try to resolve any dependencies for constructor or method parameters it might need, using information from its bindings, or trying to instantiate any types that are unknown to the binder. EasyJection allows you to replace the original values of method or constructor arguments with values from the binding
+ 
+> Note: If you don’t provide a constructor for your class, a new instance is created using the default constructor `new()`, C# creates one and sets member variables to the default values. But if you decide to create an instance by calling `new()` (with or without arguments) recommended to provide a constructor with `[MethodImpl(MethodImplOptions.NoInlining)]` attribute.
+ 
+Let's get acquainted with the available injection conditions.
+ 
+#### 🔘 Constructor Injection ####
+Injection occurs each time the specified constructor is called.
+ 
+Parameter-less constructor:
+```csharp
+container.Bind<SomeClass>()
+         .ToSelf()
+         .InjectionTo()
+         .Constructor(UseForInstantiation: True | False);
+```
+Constructor with parameters:
+```csharp
+container.Bind<SomeClass>()
+         .ToSelf()
+         .InjectionTo()
+         .Constructor<T1, T2 ... T9>(UseForInstantiation: True | False);
+```
+Constructor with passing argument values:
+```csharp
+container.Bind<SomeClass>()
+         .ToSelf()
+         .InjectionTo()
+         .Constructor<T1, T2 ... T9>(UseForInstantiation: True | False)
+         .WithArguments<T1, T2 ... T9>(T1 arg1, T2 arg2 ... T9 arg9);
+```
+
+Where:
+  - *UseForInstantiation* — if True, the container will use this constructor to create an instance, otherwise it will use the default constructor.
+  - *<T1, T2 ... T9>* — types of constructor parameters.
+#### 🔘 Method Injection ####
+The Inject-injection method works very similar to constructor injection in terms of specifying parameter types. However, there are nuances. There are two types of methods that return values and non-return (named as void). 
+
+##### Non-return Method (MethodVoid)  #####
+To specify the non-return method use the `MethodVoid()`.
+ 
+Parameter-less void method:
+```csharp
+container.Bind<SomeClass>()
+         .ToSelf()
+         .InjectionTo()
+         .MethodVoid(methodName);
+```
+with parameters:
+```csharp
+container.Bind<SomeClass>()
+         .ToSelf()
+         .InjectionTo()
+         .MethodVoid<T1, T2 ... T9>(methodName);
+```
+with passing argument values:
+```csharp
+container.Bind<SomeClass>()
+         .ToSelf()
+         .InjectionTo()
+         .MethodVoid<T1, T2 ... T9>(methodName);
+         .WithArguments<T1, T2 ... T9>(T1 arg1, T2 arg2 ... T9 arg9);
+```
+  - *methodName* — the name of a non-return method
+  - *<T1, T2 ... T9>* — types of constructor parameters.
+##### Method with result (MethodResult) #####
+To specify a method that returns a result, use `MethodResult()`.
+ 
+Parameter-less method:
+```csharp
+container.Bind<SomeClass>()
+         .ToSelf()
+         .InjectionTo()
+         .MethodResult<TResult>(methodName);
+```
+with parameters:
+```csharp
+container.Bind<SomeClass>()
+         .ToSelf()
+         .InjectionTo()
+         .MethodResult<T1, T2 ... T9, TResult>(methodName);
+```
+with passing argument values:
+```csharp
+container.Bind<SomeClass>()
+         .ToSelf()
+         .InjectionTo()
+         .MethodResult<T1, T2 ... T9, TResult>(methodName);
+         .WithArguments<T1, T2 ... T9>(T1 arg1, T2 arg2 ... T9 arg9);
+```
+  - *methodName* — the name of a non-return method
+  - *<T1, T2 ... T9>* — types of constructor parameters.
+  - *TResult* — type of return value.
+#### Injection Notes ####
+
 ## 💾 Change Log ##
 
 All notable changes to this project will be documented in files:
