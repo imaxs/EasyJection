@@ -2,7 +2,7 @@
   "name": "com.imaxs.easyjection",
   "version": "0.1.0",
   "displayName": "EasyJection",
-  "description": "EasyJection is an easy-to-use Dependency Injection (DI) Framework for C#(.Net) and Unity projects",
+  "description": "EasyJection is an easy-to-use Dependency Injection (DI) Framework for Unity Engine and beyond.",
   "documentationUrl": "https://github.com/imaxs/EasyJection/tree/main",
   "changelogUrl": "https://github.com/imaxs/EasyJection/blob/main/UnityPackage/CHANGELOG.md",
   "licensesUrl": "https://github.com/imaxs/EasyJection/blob/main/LICENSE",

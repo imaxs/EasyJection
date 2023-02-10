@@ -1,0 +1,16 @@
+{
+    "name": "Unity.EasyJection.Examples",
+    "rootNamespace": "",
+    "references": [
+        "GUID:b2514e70d34064a1aa6a671caf19e152"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
