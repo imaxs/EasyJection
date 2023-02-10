@@ -28,8 +28,8 @@ namespace EasyJection.Hooking
     public interface IHookManager : IDisposable
     {
         IMethodInvokeData InvokeData { get; }
-        object InvokeOriginalMethodResult(IBindingData bindingData, object instance, object[] originalArguments = null);
-        void InvokeOriginalMethodVoid(IBindingData bindingData, object instance, object[] originalArguments = null);
+        object InvokeOriginalMethodResult((IContainer container, IBindingData binding)? data, object instance, object[] originalArguments = null);
+        void InvokeOriginalMethodVoid((IContainer container, IBindingData binding)? data, object instance, object[] originalArguments = null);
         void Hook();
         void Unhook();
     }

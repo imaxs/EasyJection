@@ -24,42 +24,14 @@ namespace EasyJection
     using Resolving;
     using Binding;
     using Reflection;
-    using System.Runtime.CompilerServices;
     using System.Collections.Generic;
+    using Types;
 
     /// <summary>
     /// Implementation of the <see cref="IContainer"/> interface
     /// </summary>
-    public class Container : IContainer
+    public class Container : Disposable, IContainer
     {
-        private static object _lock = new object();
-        private static IContainer _instance = null;
-
-        public static IContainer Instance
-        {
-            [MethodImpl(MethodImplOptions.NoInlining)]
-            get
-            {
-                if (Container._instance is null)
-                {
-                    lock (_lock)
-                    {
-                        Container._instance = Container._instance ?? new Container();
-                    }
-                }
-                return Container._instance;
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void Reset()
-        {
-            lock (_lock) 
-            {
-                Container._instance?.Clear();
-            }
-        }
-
         protected IReflectionCache cache;
         protected IBinder binder;
         protected IResolver resolver;
@@ -87,6 +59,7 @@ namespace EasyJection
             this.cache = cache;
             this.binder = new Binder(cache);
             this.resolver = new Resolver(this.cache, this.binder);
+            Containers.Add(this);
         }
 
         /// <inheritdoc cref="IBindCreator.Bind{T}"/>
@@ -153,11 +126,11 @@ namespace EasyJection
             return this.resolver.Resolve(objects, types, scopedInstances);
         }
 
-        /// <inheritdoc cref="IContainer.Clear"/>
-        public void Clear()
+        protected override void Remove()
         {
             this.binder.CancelAll();
             this.cache.Clear();
+            Containers.Remove(this);
         }
     }
 }

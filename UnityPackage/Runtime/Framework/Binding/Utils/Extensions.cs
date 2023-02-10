@@ -71,13 +71,13 @@ namespace EasyJection.Binding.Extensions
         {
             var ctors = type.GetConstructors(   BindingFlags.Public |
                                                 BindingFlags.NonPublic |
-                                                BindingFlags.Instance);
+                                                BindingFlags.Instance |
+                                                BindingFlags.DeclaredOnly);
 
             
 
             for (int index = 0; index < ctors.Length; index++)
             {
-                UnityEngine.Debug.Log("[" + ctors[index].DeclaringType.Name + "]: ");
                 if (ctors[index].GetParameters().Length == 0)
                     return ctors[index];
             }

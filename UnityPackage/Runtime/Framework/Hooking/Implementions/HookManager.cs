@@ -26,7 +26,6 @@ namespace EasyJection.Hooking
     using EasyJection.Binding;
     using System.Collections.Generic;
     using Types;
-    using static UnityEngine.UI.Image;
 
     public sealed class HookManager : Disposable, IHookManager
     {
@@ -86,21 +85,22 @@ namespace EasyJection.Hooking
             RuntimeHelpers.PrepareMethod(originalMethod.MethodHandle);
             RuntimeHelpers.PrepareMethod(hookedMethod.MethodHandle);
 #endif
+
             if (HookImmediately)
                 this.Hook();
         }
 
         /// NOTE: If the values of the arguments for a method were specified on binding,
         /// they will replace the original arguments passed to the method when it was called.
-        public object InvokeOriginalMethodResult(IBindingData bindingData, object instance, object[] originalArguments = null)
+        public object InvokeOriginalMethodResult((IContainer container, IBindingData binding)? data, object instance, object[] originalArguments = null)
         {
             var scopedInstances = new Dictionary<System.Type, object>()
             {
-                { bindingData.Type, instance }
+                { data.Value.binding.Type, instance }
             };
 
             // Resolve dependency for each parameter specified if its value is null
-            var arguments = Container.Instance.Resolve(
+            var arguments = data.Value.container.Resolve(
                 invokeData.ArgumentsObjects ?? originalArguments,
                 invokeData.ArgumentTypes,
                 scopedInstances);
@@ -112,7 +112,7 @@ namespace EasyJection.Hooking
             object returnValue = this.originalMethod.Invoke(instance, arguments);
 
             // Dependencies Injection
-            Container.Instance.Inject(returnValue, scopedInstances);
+            data.Value.container.Inject(returnValue, scopedInstances);
 
             // Enable the hook
             this.Hook();
@@ -122,15 +122,15 @@ namespace EasyJection.Hooking
 
         /// NOTE: If the values of the arguments for a method were specified on binding,
         /// they will replace the original arguments passed to the method when it was called.
-        public void InvokeOriginalMethodVoid(IBindingData bindingData, object instance, object[] originalArguments = null)
+        public void InvokeOriginalMethodVoid((IContainer container, IBindingData binding)? data, object instance, object[] originalArguments = null)
         {
             var scopedInstances = new Dictionary<System.Type, object>()
             {
-                {  bindingData.Type, instance }
+                { data.Value.binding.Type, instance }
             };
 
             // Resolve dependency for each parameter specified if its value is null
-            var arguments = Container.Instance.Resolve(
+            var arguments = data.Value.container.Resolve(
                 invokeData.ArgumentsObjects ?? originalArguments,
                 invokeData.ArgumentTypes,
                 scopedInstances);
@@ -142,7 +142,7 @@ namespace EasyJection.Hooking
             this.originalMethod.Invoke(instance, arguments);
 
             // Dependencies Injection
-            Container.Instance.Inject(bindingData, instance, scopedInstances);
+            data.Value.container.Inject(data.Value.binding, instance, scopedInstances);
 
             // Enable the hook
             this.Hook();
@@ -189,6 +189,7 @@ namespace EasyJection.Hooking
         {
             if (!this.isHooked)
                 return;
+
 #if ENABLE_IL2CPP
             // IL2CPP.__IL2CPP_LOG("m_Il2CPPStruct: " + m_Il2CPPStruct.originalMethodPointer);
             unsafe

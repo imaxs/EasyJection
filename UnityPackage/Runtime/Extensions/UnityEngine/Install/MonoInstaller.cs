@@ -17,26 +17,20 @@
  * limitations under the License.
  */
 
-using EasyJection.Binding;
-using EasyJection.Resolving;
+#if UNITY_EDITOR || UNITY_STANDALONE || UNITY_WII || UNITY_IOS || UNITY_ANDROID || UNITY_PS4 || UNITY_XBOXONE || UNITY_TIZEN || UNITY_TVOS || UNITY_WSA || UNITY_WEBGL || UNITY_FACEBOOK
+    #define UNITY_ENGINE_AVAILABLE
+#endif
+
 using System;
 
 namespace EasyJection
 {
-    /// <summary>
-    /// Defines a container for dependency injection.
-    /// </summary>
-    /// <remarks>A container holds binding references, resolves types and injects dependencies.</remarks>
-    public interface IContainer : IBindCreator, IResolver, IDisposable
-    {
-        /// <summary>
-        /// Initializes the container.
-        /// </summary>
-        /// <remarks>
-        /// Should be called after adding all extensions and bindings.
-        /// </remarks>
-        void Init();
+#if UNITY_ENGINE_AVAILABLE
+    using UnityEngine;
 
-        IBindingData this[Type type] { get; }
+    public class MonoInstaller : MonoBehaviour
+    {
+
     }
+#endif
 }

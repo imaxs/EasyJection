@@ -22,7 +22,6 @@ using System;
 namespace EasyJection.Resolving
 {
     using Binding;
-    using EasyJection.Hooking;
     using EasyJection.Types;
     using Reflection;
     using System.Collections.Generic;
