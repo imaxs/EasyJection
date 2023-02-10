@@ -630,7 +630,7 @@ container.Bind<SomeClass>()
          .MethodResult<T1, T2 ... T9, TResult>(methodName);
          .WithArguments<T1, T2 ... T9>(T1 arg1, T2 arg2 ... T9 arg9);
 ```
-  - *methodName* — the name of a non-return method
+  - *methodName* — the name of a method.
   - *<T1, T2 ... T9>* — types of constructor parameters.
   - *TResult* — type of return value.
 #### Injection Notes ####
