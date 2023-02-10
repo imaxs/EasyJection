@@ -6,35 +6,35 @@
 ![GitHub issues](https://img.shields.io/github/issues/imaxs/EasyJection?style=flat-square)
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/imaxs/EasyJection/main?style=flat-square)
 
-✅ | <code><b>Quick and easy setup to get started</b></code>
+✅ | <b>➡️ Without using any attributes for injection</b>
 :---: | :---
-✅ | <code><b>Without using attributes</b> <i>(makes your project less dependent on this solution)</i></code>
-✅ | <code><b>There is no need to add a Using directive to each project file that uses DI</b></code>
-✅ | <code><b>Allows for much more flexible, reusable, and encapsulated code to be written</b></code>
+✅ | <b>Quick and easy setup to get started</b>
+✅ | <b>There is no need to add a Using directive to each project file that uses DI</b>
+✅ | <b>Allows for much more flexible, reusable, and encapsulated code to be written</b>
 
 ## 🗂 Contents ##
 
   * [Introduction](#-introduction)
-    * [What is this?](#what-is-this)
-    * [Why use this?](#why-use-this)
+    * [What is it?](#what-is-it)
+    * [Why use it?](#why-use-it)
     * [Why use it with Unity?](#why-use-it-with-unity)
   * [Key Features and Concepts](#-key-features-and-concepts)
   * [Motivation](#-motivation)
   * [Installation](#-installation)
-  * [Examples](#-examples)
+  * [Usage](#-usage)
   * [Change Log](#-change-log)
   * [Contributing](#-contributing)
   * [License](#-license)
 
 ## 📝 Introduction ##
-#### What is this? ####
+#### What is it? ####
 EasyJection is an easy-to-use Dependency Injection (DI) Framework for *C#(.Net)* and *Unity* projects.<br/>
-The framework implements dependency injection **without** using attributes. Such an implementation avoids tying your project code to the  framework. You can start using the framework without having to manipulate each part of your project's code. 
-> *Since when the attributes (as well as the namespace) are used in your project's class code, that class, at least indirectly, begins to know about where it gets its dependency from.*
+The framework implements dependency injection **without** using attributes. Such an implementation avoids tying your project code to the framework. Write your code without direct dependencies on the framework itself. You will not have to include framework's namespaces everywhere 
+> *Since when the attributes (as well as the namespace) are used in your project's class, that class, at least indirectly, begins to know about where it gets its dependency from.*
 
 This project is open source.
 
-#### Why use this? ####
+#### Why use it? ####
 If you're familiar with dependency injection and see how EasyJection could help your project, check out the [installation](#installation) and [key features](#key-features-and-concepts) to see more. If not, read on:
 
 Dependency Injection (DI) is an intimidating word for a simple concept you're likely familiar with. Dependency Injection in simple words, is a software design concept that allows a service to be injected in a way that is completely independent of any client consumption. Dependency Injection separates the creation of a client's dependencies from the client's behavior, which allows program designs to be loosely coupled. A DI container, in pair with a good architecture, can ensure [SOLID](https://en.wikipedia.org/wiki/SOLID) principles and help you write better code.
@@ -59,9 +59,10 @@ Unfortunately the Unity game engine isn't very SOLID-friendly out of the box. Ev
       * Method injection *(through Awake() and Start(), or other custom methods)*
       * Field injection
       * Property injection
+  * Replacing the original parameters of the method/constructor.
   * Can inject on non public members.
-  * Convention based binding *(based on type name, namespace, etc.)*
-  * Conditional binding *(eg. by name, by signature, etc.)*
+  * Convention based binding.
+  * Conditional binding *(eg. by method name, by signature, etc.)*
   * Context Aware Injection Support *(dependencies can be automatically injected using the components contained in the child and parents)*
 
 ## 💡 Motivation ##
@@ -177,12 +178,24 @@ public class Cube : MonoBehaviour
 // Cube.cs
 using UnityEngine;
 
+// Note: Dependency injection occurs when a method or constructor is called,
+// it depends on what you specify.
 public class Cube : MonoBehaviour
 {
     private IRotate m_RotateSystem;
     
-    // Injection is done when this method is called.
-    private void Awake() { }
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    // For injection via the constructor
+    public Cube()
+    {
+        UnityEngine.Debug.Log("Constructor");
+    }
+    
+    // For injection via 'Awake' method
+    private void Awake()
+    {
+        UnityEngine.Debug.Log("Awake");
+    }
 
     private void Update()
     {
@@ -254,10 +267,19 @@ public class EntryPoint
        will only be called for the first scene in a run of the application, not every scene. */
     static void OnBeforeSceneLoadRuntimeMethod()
     {
-        Container container = new Container();
-        container.Binder.Bind<IRotate>().To<Rotate>();
-        container.Binder.Bind<Cube>().ToSelf().ConstructionMethod("Awake");
-        container.ResolveAll();
+        var container = new Container();
+        container.Bind<IRotate>().To<Rotate>();
+        
+        ////////////////////////////////////////////////
+        // Below are 2 injection ways (use only one of them)
+        ////////////////////////////////////////////////
+        
+        // #1 when the constructor is called. 
+        container.Bind<Cube>().ToSelf(UseDefaultConstructor: true);
+        
+        // #2 or when the 'Awake' method is called.
+        // This way is recommended for objects inherited from MonoBehaviour
+         container.Bind<Cube>().ToSelf().InjectionTo().MethodVoid("Awake");
  
         /* Note: You can also create a container and set bindings in a class inherited
                  from MonoBehaviour and then add the script to the current active scene.
@@ -283,107 +305,14 @@ public class EntryPoint
 </details>
 
 As you can see, the framework does all the work of resolving the dependencies.
- 
-**There is also an alternative way:**
-<table>
-<tr><td>Source code of the project <b>without</b> <code>using EasyJection;</code> directive.</td></tr>
-<tr><td>
-<code>Removed Awake () method</code>
-<details>
- <summary>📃 Cube.cs</summary>
- 
- ```csharp
-// Cube.cs
-using UnityEngine;
 
-public class Cube : MonoBehaviour
-{
-    private IRotate m_RotateSystem;
- 
-    private void Update()
-    {
-        m_RotateSystem.DoRotate(0, 0.25f, 0);
-    }
-}
-```
-</details>
-</td></tr>
-<tr><td>
-<code>no change</code>
-<details>
- <summary>📃 IRotate.cs</summary>
- 
- ```csharp
-// IRotate.cs
-using UnityEngine;
-
-public interface IRotate
-{
-    void DoRotate(float x, float y, float z);
-}
-```
-</details>
-</td></tr>
-<tr><td>
-<code>no change</code>
-<details>
- <summary>📃 Rotate.cs</summary>
- 
- ```csharp
-// Rotate.cs
-using UnityEngine;
-
-public class Rotate : IRotate
-{
-    private Cube m_Cube;
-
-    public void DoRotate(float x, float y, float z)
-    {
-        m_Cube.transform.Rotate(x, y, z);
-    }
-}
-```
-</details>
-</td></tr>
-</table>
-
-<table>
-<tr><td>Source code <b>with</b> <code>using EasyJection;</code> directive.</td></tr>
-<tr><td>
-<code>Changed a binding for 'Cube' type with injection via the default constructor</code>
-<details>
- <summary>📃 EntryPoint.cs</summary>
- 
- ```csharp
-// EntryPoint.cs
-using UnityEngine;
-using EasyJection;
-
-public class EntryPoint
-{
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    static void OnBeforeSceneLoadRuntimeMethod()
-    {
-        Container container = new Container();
-        container.Binder.Bind<IRotate>().To<Rotate>();
-        container.Binder.Bind<Cube>().ToSelf(); // <-- Default constructor injection
-        container.ResolveAll();
-    }
-}
-``` 
-</details>
-</td></tr>
-</table>
-
-Create a game object, something like this:
+So now the injection will also work fine every time you create a gameobject, something like this:
 ```csharp
  GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
  cube.AddComponent<Cube>()
 ```
- 
-**This works great too!**
 
->Note: Attempting to get any MonoBehaviour component inside a constructor of class 'Rotate' will throw an exception, since the injection is done via a constructor of an object inherited from MonoBehaviour.
+> ⚠️ Attention: Attempting to get any MonoBehaviour component inside a constructor of class 'Rotate' will throw an exception, since the injection is done via a constructor of an object inherited from MonoBehaviour.
 
 <details>
  <summary>The code below throws an UnityException</summary>
@@ -427,32 +356,26 @@ You can use the path query parameter in the Git URL to notify the Package Manage
 - Download the .unitypackage from [releases page](https://github.com/imaxs/EasyJection/releases)
 - Import EasyJection.X.X.X.unitypackage
 
-## 🎲 Examples ##
+## 🎲 Usage ##
 ### DI / IoC container ###
 
 DI container (a.k.a IoC Container) is a key feature of the dependency injection implementation. The container creates an object of the specified type and then automatically injects all the dependency objects through a constructor, property, field or method at runtime. This is done automatically by the DI (IoC) container so that you don’t have to create and manage these dependency objects manually.
-
 ```csharp
 using EasyJection;
 ...
-// Create the DI/IoC container
+// Create the container
 Container container = new Container();
 ```
 
-You should call `ResolveAll()` method after all of the bindings have been set up.
-```csharp
-container.ResolveAll();
-```
-
 ### Bindings ###
-This works the same for both reference *(class)* and value *(struct)* types.
+The created container should then 'know' how to create all the object instances in your application, by recursively resolving all dependencies for a given object. You have to create bindings. Binding is the action of linking a type to another type or instance. EasyJection makes it simple by providing different ways to create them. Each binding must be performed to a specific key type by calling the `Bind()` method.
 ```csharp
 // Binding some interface to its class implementation
-container.Binder.Bind<ISomeInterface>().To<SomeClass>();
+container.Bind<ISomeInterface>().To<SomeClass>();
 ```
 ```csharp
 // Binding some interface to its struct implementation
-container.Binder.Bind<IStructInterface>().To<SomeStruct>();
+container.Bind<IStructInterface>().To<SomeStruct>();
 ```
 
 #### Available Bindings ####
@@ -465,14 +388,14 @@ container.Binder.Bind<ISomeInterface>().To<SomeClass>();
 ##### To Single #####
 ```csharp
 // A single instance of the implementation type is created
-container.Binder.Bind<ISomeInterface>()
+container.Bind<ISomeInterface>()
                 .To<SomeClass>()
                 .AsSingle();
 ```
 ##### To Self #####
 ```csharp
 // Binding the type to the transient of itself
-container.Binder.Bind<SomeClass>().ToSelf();
+container.Bind<SomeClass>().ToSelf();
 ```
 #### Conditions ####
 If you don’t provide a constructor for your class, a new instance is created using the default constructor `new()`, C# creates one and sets member variables to the default values. But if you decide to create an instance through `new()` (with or without arguments) you need to provide a constructor with `[MethodImpl(MethodImplOptions.NoInlining)]` attribute. `Note that a value type (C# struct) can't have a constructor with no parameters.` Otherwise you can specify a constructor to use to instantiate your type, this is possible in several ways:
@@ -480,12 +403,12 @@ If you don’t provide a constructor for your class, a new instance is created u
 ```csharp
 // A ValueType constructor with 3 arguments (parameters). The maximum number of parameters is 9.
 // Instances will be created with the specified argument values
-container.Binder.Bind<Vector2>()
+container.Bind<Vector2>()
                 .ToSelf()
                 .ConstructionMethod()
                 .WithArguments<int, int>(4, 2);
 // or
-container.Binder.Bind<ISomeInterface>()
+container.Bind<ISomeInterface>()
                 .To<SomeClass>()
                 .ConstructionMethod()
                 .WithArguments(new object[]{ "Some Text", 2021 });
