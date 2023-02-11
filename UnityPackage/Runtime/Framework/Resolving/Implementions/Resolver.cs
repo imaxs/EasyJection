@@ -120,7 +120,12 @@ namespace EasyJection.Resolving
             else if (bindingData.InstanceType.HasFlag(BindingInstanceType.Factory))
             {
                 bindingData.InstanceType = BindingInstanceType.Factory | BindingInstanceType.Instance;
-                bindingData.Factory = instance as IFactory;
+
+                if (bindingData.Factory == null)
+                    bindingData.Factory = instance as IFactory;
+                else
+                    (bindingData.Factory as IFectorySetter).SetFactoryinstance(instance);
+
                 return bindingData.Factory.CreateInstance(bindingData);
             }
 

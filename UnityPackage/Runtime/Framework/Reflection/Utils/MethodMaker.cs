@@ -130,5 +130,10 @@ namespace EasyJection.Reflection.Utils
         {
             return (object instance, object[] parameters) => methodInfo.Invoke(instance, parameters);
         }
+
+        public static InstantiatorCall CreateInstantinateMethod(System.Reflection.MethodInfo methodInfo)
+        {
+            return (object instance) => methodInfo.Invoke(instance, null);
+        }
     }
 }

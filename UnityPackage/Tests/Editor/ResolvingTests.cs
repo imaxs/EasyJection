@@ -179,11 +179,11 @@
             Assert.Null(container[typeof(OriginalMethod_3)]);
         }
 
-        [TestFixtureTearDown]
+        [OneTimeTearDown]
         public void TearDown()
         {
             binder.CancelAll();
-            Container.Reset();
+            Containers.Reset();
             GC.Collect();
         }
     }

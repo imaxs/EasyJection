@@ -59,7 +59,7 @@
         [OneTimeTearDown]
         public void TearDown()
         {
-            Container.Reset();
+            Containers.Reset();
             GC.Collect();
         }
     }

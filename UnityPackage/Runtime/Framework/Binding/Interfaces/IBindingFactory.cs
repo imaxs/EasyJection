@@ -143,16 +143,18 @@ namespace EasyJection.Binding
         /// <summary>
         /// Binds the key type to a type of <typeparamref name="T"/> as a transient.
         /// </summary>
+        /// <param name="UseDefaultConstructor">Specifying the use of the default constructor to create an instance</param>
         /// <typeparam name="T">The type to bind to.</typeparam>
         /// <returns>The binding condition object related to this binding.</returns>
-        IBindingCondition To<T>() where T : class;
+        IBindingCondition To<T>(bool UseDefaultConstructor = false) where T : class;
 
         /// <summary>
         /// Binds the key type to a <paramref name="type"/> as a transient.
         /// </summary>
+        /// <param name="UseDefaultConstructor">Specifying the use of the default constructor to create an instance</param>
         /// <param name="type">The related type.</param>
         /// <returns>The binding condition object related to this binding.</returns>
-        IBindingCondition To(Type type);
+        IBindingCondition To(Type type, bool UseDefaultConstructor = false);
 
         /// <summary>
         /// Binds the key type to an <paramref name="instance"/> of a <typeparamref name="T"/> type.
@@ -175,7 +177,7 @@ namespace EasyJection.Binding
         /// </summary>
         /// <param name="UseDefaultConstructor">Specifying the use of the default constructor to create an instance</param>
         /// <typeparam name="T">The type which has implemented <see cref="Types.IFactory"/> interface.</typeparam>
-        /// /// <returns>The binding injection object related to this binding.</returns>
+        /// <returns>The binding injection object related to this binding.</returns>
         IBindingInjection ToFactory<T>(bool UseDefaultConstructor = false) where T : Types.IFactory;
 
         /// <summary>
@@ -201,11 +203,21 @@ namespace EasyJection.Binding
         void ToFactory(Types.IFactory instance);
 
         /// <summary>
+        /// Binds the key type to a <typeparamref name="T"/> factory.
+        /// </summary>
+        /// <param name="methodName">The name of the method of your  <typeparamref name="T"/> factory that will create an instance.</param>
+        /// <param name="UseDefaultConstructor">Specifying the use of the default constructor to create an instance of <typeparamref name="T"/> factory.</param>
+        /// <typeparam name="T">The type of your factory.</typeparam>
+        /// <returns>The binding injection object related to this binding.</returns>
+        IBindingInjection ToFactory<T>(string methodName, bool UseDefaultConstructor = false) where T : class;
+
+        /// <summary>
         /// Creates a binding.
         /// </summary>
         /// <param name="value">Binding value.</param>
+        /// <param name="UseDefaultConstructor">Specifying the use of the default constructor to create an instance</param>
         /// <returns>The binding injection object related to this binding.</returns>
-        IBindingCondition AddBinding(object value);
+        IBindingCondition AddBinding(object value, bool UseDefaultConstructor);
 
         /// <summary>
         /// Creates a binding.

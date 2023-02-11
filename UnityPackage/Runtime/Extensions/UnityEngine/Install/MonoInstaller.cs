@@ -28,9 +28,25 @@ namespace EasyJection
 #if UNITY_ENGINE_AVAILABLE
     using UnityEngine;
 
-    public class MonoInstaller : MonoBehaviour
+    public abstract class MonoInstaller : MonoBehaviour
     {
+        protected IContainer Container;
 
+        protected abstract void InstallBindings();
+
+        protected MonoInstaller() 
+        {
+            if (Container == null)
+                Container = new Container();
+
+            this.InstallBindings();
+        }
+
+        protected void OnDestroy()
+        {
+            if (Container != null)
+                Container.Dispose();
+        }
     }
 #endif
 }

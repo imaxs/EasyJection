@@ -32,11 +32,11 @@
         {
             var binder = new Binder();
 
-            binder.Bind<IMockClassInterface>().To<MockClass>();
+            binder.Bind<IMockClassInterface>().To<MockClass>(UseDefaultConstructor: true);
 
             var binding = binder.GetBindingFor<IMockClassInterface>();
 
-            Assert.IsNull(binding.InstantiationConstructor);
+            Assert.NotNull(binding.InstantiationConstructor);
 
             binder.CancelAll();
         }
@@ -132,38 +132,39 @@
         [Test]
         public void TestBinding_InjectionToMethodSignature()
         {
-            Container.Instance.Bind<OriginalMethod>().ToSelf()
+            var container = new Container();
+            container.Bind<OriginalMethod>().ToSelf()
                               .InjectionTo()
                               .MethodResult<int, int>("GetNumber");
 
-            var binding = Container.Instance[typeof(OriginalMethod)];
+            var binding = container[typeof(OriginalMethod)];
 
             Assert.AreEqual(BindingInstanceType.Transient, binding.InstanceType);
             Assert.AreEqual(1, binding[typeof(HookedMethodResult<int,int>)].Count);
 
-            Container.Reset();
+            container.Dispose();
         }
 
         [Test]
         public void TestBinding_InjectionToMethodWithArguments()
         {
-            Container.Instance.Bind<OriginalMethod>().ToSelf()
+            var container = new Container();
+            container.Bind<OriginalMethod>().ToSelf()
                               .InjectionTo()
                               .MethodResult<int, int>("GetNumber").WithArguments<int>(2023);
 
-            var binding = Container.Instance[typeof(OriginalMethod)];
+            var binding = container[typeof(OriginalMethod)];
             var hooList = binding[typeof(HookedMethodResult<int, int>)];
 
             Assert.AreEqual(BindingInstanceType.Transient, binding.InstanceType);
             Assert.AreEqual(1, hooList.Count);
 
-            Container.Reset();
+            container.Dispose();
         }
 
         [OneTimeTearDown]
         public void TearDown()
         {
-            Container.Reset();
             GC.Collect();
         }
     }

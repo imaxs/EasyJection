@@ -25,6 +25,7 @@ namespace EasyJection.Binding
     using Types;
     using Reflection;
     using System.Runtime.CompilerServices;
+    using EasyJection.Binding.Extensions;
 
     /// <summary>
     /// Implementation of the <see cref="IBindingFactory"/> interface
@@ -50,7 +51,7 @@ namespace EasyJection.Binding
         }
 
         /// <inheritdoc cref="IBindingFactory.AddBinding(object)"/>
-        public IBindingCondition AddBinding(object value) 
+        public IBindingCondition AddBinding(object value, bool UseDefaultConstructor) 
         {
             var binding = new BindingData(this.BindingType, value, BindingInstanceType.Transient);
             this.Binder.AddBinding(binding);
@@ -60,7 +61,9 @@ namespace EasyJection.Binding
                 this.PreCaching(value as Type ?? value.GetType());
 
             var bindInjection = this.CreateBindingInjectionFactoryProvider(binding);
-            bindInjection.Constructor(true);
+
+            if (UseDefaultConstructor)
+                bindInjection.Constructor(true);
 
             return this.CreateBindingConditionFactoryProvider(binding);
         }
@@ -92,19 +95,19 @@ namespace EasyJection.Binding
             return bindInjection;
         }
 
-        /// <inheritdoc cref="IBindingFactory.To{T}()"/>
-        public IBindingCondition To<T>() where T : class
+        /// <inheritdoc cref="IBindingFactory.To{T}(bool)"/>
+        public IBindingCondition To<T>(bool UseDefaultConstructor = false) where T : class
         {
-            return this.To(typeof(T));
+            return this.To(typeof(T), UseDefaultConstructor);
         }
 
-        /// <inheritdoc cref="IBindingFactory.To(Type)"/>
-        public IBindingCondition To(Type type)
+        /// <inheritdoc cref="IBindingFactory.To(Type, bool)"/>
+        public IBindingCondition To(Type type, bool UseDefaultConstructor = false)
         {
             if (!Helper.IsAssignable(this.BindingType, type))
                 throw new Exception(Causes.TYPE_NOT_ASSIGNABLE);
 
-            return this.AddBinding(type);
+            return this.AddBinding(type, UseDefaultConstructor);
         }
 
         /// <inheritdoc cref="IBindingFactory.ToInstance{T}(T)"/>
@@ -152,6 +155,31 @@ namespace EasyJection.Binding
         public void ToFactory(Types.IFactory instance)
         {
             this.AddFactoryInstance(null, instance);
+        }
+
+        /// <inheritdoc cref="IBindingFactory.ToFactory{T}(string)"/>
+        public IBindingInjection ToFactory<T>(string methodName, bool UseDefaultConstructor = false) where T : class
+        {
+            var type = typeof(T);
+            var methodInfo = type.FindMethodByName(methodName);
+            if (methodInfo is null)
+                throw new Exception(string.Format(Causes.METHOD_NOT_FOUND, methodName, type.Name));
+
+            var binding = new BindingData(this.BindingType, type, BindingInstanceType.Factory);
+            binding.Factory = new Factory(methodInfo);
+
+            this.Binder.AddBinding(binding);
+
+            // Precaching
+            if (type != null)
+                this.PreCaching(type);
+
+            var bindInjection = this.CreateBindingInjectionFactoryProvider(binding);
+
+            if (UseDefaultConstructor)
+                bindInjection.Constructor(true);
+
+            return bindInjection;
         }
 
         /// <inheritdoc cref="IBindingFactory.ToSelf(bool)"/>
