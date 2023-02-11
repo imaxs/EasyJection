@@ -32,7 +32,7 @@
         {
             var binder = new Binder();
 
-            binder.Bind<IMockClassInterface>().To<MockClass>();
+            binder.Bind<IMockClassInterface>().To<MockClass>(UseDefaultConstructor: true);
 
             var binding = binder.GetBindingFor<IMockClassInterface>();
 

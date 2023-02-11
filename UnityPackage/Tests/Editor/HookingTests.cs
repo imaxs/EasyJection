@@ -184,6 +184,44 @@
             container.Dispose();
         }
 
+        [Test]
+        public void TestHook_IFactory()
+        {
+            var container = new Container();
+            container.Bind<IMockClassConstructArgument>()
+                     .To<MockClassConstructArgument>()
+                     .InjectionTo().Constructor<IHeirMockInterface>();
+
+            container.Bind<IHeirMockInterface>().ToFactory<HeirMockClassFactory>();
+
+            var mock = new MockClassConstructArgument(null);
+            container.Inject(mock);
+
+            Assert.AreEqual((int)TestValue.IntValueThroughDefaultConstructor, mock.Instance.IntValue);
+
+            container.Dispose();
+        }
+
+        [Test]
+        public void TestHook_CustomFactory()
+        {
+            var container = new Container();
+            container.Bind<IMockClassConstructArgument>()
+                     .To<MockClassConstructArgument>()
+                     .InjectionTo().Constructor<IHeirMockInterface>();
+
+            container.Bind<IHeirMockInterface>()
+                     .ToFactory<HeirMockClassCustomFactory>("CreateInstance")
+                     .InjectionTo().Constructor<string>(UseForInstantiation: true).WithArguments<string>("My Sweet Factory");
+
+            var mock = new MockClassConstructArgument(null);
+            container.Inject(mock);
+
+            Assert.AreEqual((int)TestValue.IntValueThroughDefaultConstructor, mock.Instance.IntValue);
+
+            container.Dispose();
+        }
+
         [OneTimeTearDown]
         public void TearDown()
         {

@@ -145,7 +145,7 @@ namespace EasyJection.Tests.EditMode
         private IHeirMockInterface m_Instance;
         public IHeirMockInterface Instance { get => this.m_Instance; }
 
-        MockClassConstructArgument(IHeirMockInterface instance) 
+        public MockClassConstructArgument(IHeirMockInterface instance) 
         {
             m_Instance = instance;
         }
@@ -155,6 +155,22 @@ namespace EasyJection.Tests.EditMode
     {
         public object CreateInstance(IBindingData bindingData = null)
         {
+            return new HeirMockClass();
+        }
+    }
+
+    public class HeirMockClassCustomFactory
+    {
+        private string m_Name;
+
+        public HeirMockClassCustomFactory(string factoryName) 
+        {
+            this.m_Name = factoryName;
+        }
+
+        public object CreateInstance()
+        {
+            UnityEngine.Debug.Log("Factory Name: " + this.m_Name);
             return new HeirMockClass();
         }
     }

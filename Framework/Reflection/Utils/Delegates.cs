@@ -23,6 +23,13 @@ namespace EasyJection.Reflection.Utils
 {
     #region Comment
     /// <summary>
+    /// Delegate for the factory's method of creating an instance without parameters.
+    /// </summary>
+    #endregion
+    public delegate object InstantiatorCall(object instance);
+
+    #region Comment
+    /// <summary>
     /// Delegate for a constructor call without parameters.
     /// </summary>
     #endregion
