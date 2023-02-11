@@ -1,5 +1,5 @@
 {
-    "name": "Unity.EasyJection.Editor.Tests",
+    "name": "imaxs.EasyJection.Editor.Tests",
     "rootNamespace": "",
     "references": [
         "GUID:e372c541aba5148868e12aa078ca7c20",

@@ -1,7 +1,10 @@
 ﻿using EasyJection.Binding;
 using EasyJection.Resolving;
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+
+using Console = UnityEngine.Debug;
 
 namespace EasyJection.Tests.EditMode
 {
@@ -153,6 +156,22 @@ namespace EasyJection.Tests.EditMode
         public object CreateInstance(IBindingData bindingData = null)
         {
             return new HeirMockClass();
+        }
+    }
+
+    public class MockClassString 
+    {
+        public string m_String;
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public MockClassString()
+        {
+            m_String = null;
+        }
+
+        public string GetSring() 
+        {
+            return m_String;
         }
     }
 
@@ -318,17 +337,32 @@ namespace EasyJection.Tests.EditMode
                 throw new NotImplementedException();
             }
 
-            public T Resolve<T>()
+            public void Inject(object instance, IDictionary<Type, object> scopedInstances)
             {
                 throw new NotImplementedException();
             }
 
-            public object Resolve(Type type)
+            public void Inject(Type instanceType, object instance, IDictionary<Type, object> scopedInstances)
             {
                 throw new NotImplementedException();
             }
 
-            public object[] Resolve(object[] objects, Type[] types)
+            public void Inject(IBindingData bindingData, object instance, IDictionary<Type, object> scopedInstances)
+            {
+                throw new NotImplementedException();
+            }
+
+            public T Resolve<T>(IDictionary<Type, object> scopedInstances)
+            {
+                throw new NotImplementedException();
+            }
+
+            public object Resolve(Type type, IDictionary<Type, object> scopedInstances)
+            {
+                throw new NotImplementedException();
+            }
+
+            public object[] Resolve(object[] objects, Type[] types, IDictionary<Type, object> scopedInstances)
             {
                 throw new NotImplementedException();
             }
@@ -341,17 +375,32 @@ namespace EasyJection.Tests.EditMode
                 throw new NotImplementedException();
             }
 
-            public T Resolve<T>()
+            public void Inject(object instance, IDictionary<Type, object> scopedInstances)
             {
                 throw new NotImplementedException();
             }
 
-            public object Resolve(Type type)
+            public void Inject(Type instanceType, object instance, IDictionary<Type, object> scopedInstances)
             {
                 throw new NotImplementedException();
             }
 
-            public object[] Resolve(object[] objects, Type[] types)
+            public void Inject(IBindingData bindingData, object instance, IDictionary<Type, object> scopedInstances)
+            {
+                throw new NotImplementedException();
+            }
+
+            public T Resolve<T>(IDictionary<Type, object> scopedInstances)
+            {
+                throw new NotImplementedException();
+            }
+
+            public object Resolve(Type type, IDictionary<Type, object> scopedInstances)
+            {
+                throw new NotImplementedException();
+            }
+
+            public object[] Resolve(object[] objects, Type[] types, IDictionary<Type, object> scopedInstances)
             {
                 throw new NotImplementedException();
             }
@@ -364,19 +413,70 @@ namespace EasyJection.Tests.EditMode
                 throw new NotImplementedException();
             }
 
-            public T Resolve<T>()
+            public void Inject(object instance, IDictionary<Type, object> scopedInstances)
             {
                 throw new NotImplementedException();
             }
 
-            public object Resolve(Type type)
+            public void Inject(Type instanceType, object instance, IDictionary<Type, object> scopedInstances)
             {
                 throw new NotImplementedException();
             }
 
-            public object[] Resolve(object[] objects, Type[] types)
+            public void Inject(IBindingData bindingData, object instance, IDictionary<Type, object> scopedInstances)
             {
                 throw new NotImplementedException();
+            }
+
+            public T Resolve<T>(IDictionary<Type, object> scopedInstances)
+            {
+                throw new NotImplementedException();
+            }
+
+            public object Resolve(Type type, IDictionary<Type, object> scopedInstances)
+            {
+                throw new NotImplementedException();
+            }
+
+            public object[] Resolve(object[] objects, Type[] types, IDictionary<Type, object> scopedInstances)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public interface IRotate
+        {
+            void DoRotate(float x, float y, float z);
+        }
+
+        public class Rotate : IRotate
+        {
+            private Cube m_Cube;
+
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            public Rotate()
+            {
+                m_Cube = null;
+            }
+
+            public void DoRotate(float x, float y, float z)
+            {
+                m_Cube.CheckValue = x + y + z;
+            }
+        }
+
+        public class Cube
+        {
+            public float CheckValue;
+            private IRotate m_RotateSystem;
+
+            //[MethodImpl(MethodImplOptions.NoInlining)]
+            //public Cube()
+            //{ }
+
+            public void Update()
+            {
+                m_RotateSystem.DoRotate(1.0f, 0.25f, 0.5f);
             }
         }
     }

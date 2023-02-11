@@ -21,7 +21,7 @@
 
             Assert.NotNull(mock.field);
 
-            container.Clear();
+            container.Dispose();
         }
 
         [Test]
@@ -38,7 +38,7 @@
             Assert.NotNull(mock.property);
             Assert.AreEqual((int)TestValue.PublicProperty, mock.property.PublicProperty);
 
-            container.Clear();
+            container.Dispose();
         }
 
         [Test]
@@ -57,7 +57,7 @@
             Assert.IsTrue(mock.Field.BoolValue);
             Assert.IsTrue(mock.Field.IntValue == 999);
 
-            container.Clear();
+            container.Dispose();
         }
 
         [Test]
@@ -76,7 +76,7 @@
             Assert.IsTrue(mock.Field.BoolValue);
             Assert.AreEqual((int)TestValue.IntValueThroughDefaultConstructor, mock.Field.IntValue);
 
-            container.Clear();
+            container.Dispose();
         }
 
         [Test]
@@ -95,7 +95,7 @@
             Assert.IsTrue(mock.Field.BoolValue);
             Assert.AreEqual((int)TestValue.IntValueThroughDefaultConstructor, mock.Field.IntValue);
 
-            container.Clear();
+            container.Dispose();
         }
 
         [Test]
@@ -112,7 +112,7 @@
             Assert.IsTrue(mock.Field.BoolValue);
             Assert.AreEqual((int)TestValue.IntValueThroughDefaultConstructor, mock.Field.IntValue);
 
-            container.Clear();
+            container.Dispose();
         }
 
         [Test]
@@ -133,13 +133,12 @@
             Assert.IsTrue(mock.BoolValue);
             Assert.AreEqual(999, mock.IntValue);
 
-            container.Clear();
+            container.Dispose();
         }
 
         [OneTimeTearDown]
         public void TearDown()
         {
-            Container.Reset();
             GC.Collect();
         }
     }

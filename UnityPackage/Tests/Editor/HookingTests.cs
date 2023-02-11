@@ -9,53 +9,72 @@
 
     [TestFixture]
     public class HookingTests
-    {        
+    {
+
+        [Test]
+        public void TestHook_String()
+        {
+            var container = new Container();
+            container.Bind<string>().ToInstance("Hello bro!");
+            container.Bind<MockClassString>().ToSelf(UseDefaultConstructor: true);
+
+            var binding = container[typeof(string)];
+
+            var instance = new MockClassString();
+
+            Assert.AreEqual("Hello bro!", binding.Value);
+            Assert.AreEqual("Hello bro!", instance.GetSring());
+
+            container.Dispose();
+        }
+
         [Test]
         public void TestHook_Constructor()
         {
-            Container.Instance
-                .Bind<OriginalMethod>().ToSelf()
-                .InjectionTo()
-                .Constructor<string>();
+            var container = new Container();
+            container.Bind<OriginalMethod>().ToSelf()
+                    .InjectionTo()
+                    .Constructor<string>();
 
-            var hookedMethod = Container.Instance[typeof(OriginalMethod)]
-                                                 [typeof(HookedMethodVoid<string>)][0];
+            var hookedMethod = container[typeof(OriginalMethod)][typeof(HookedMethodVoid<string>)][0];
 
             var instance = new OriginalMethod("Original string");
 
             Assert.AreEqual("Original string", instance.stringValue);
+
+            container.Dispose();
         }
 
         [Test]
         public void TestHook_ConstructorWithArgements()
         {
-            Container.Instance
-                .Bind<OriginalMethod>().ToSelf()
-                .InjectionTo()
-                .Constructor<string, int>().WithArguments<string, int>("From Hook", 2023);
+            var container = new Container();
+            container.Bind<OriginalMethod>()
+                    .ToSelf()
+                    .InjectionTo()
+                    .Constructor<string, int>()
+                    .WithArguments<string, int>("From Hook", 2023);
 
-            var hookedMethod = Container.Instance[typeof(OriginalMethod)]
-                                                 [typeof(HookedMethodVoid<string, int>)][0];
+            var hookedMethod = container[typeof(OriginalMethod)][typeof(HookedMethodVoid<string, int>)][0];
 
             var instance = new OriginalMethod("Original string", 555);
 
             Assert.AreEqual("From Hook", instance.stringValue);
             Assert.AreEqual(2023, instance.number);
 
-
-            Container.Reset();
+            container.Dispose();
         }
 
         [Test]
         public void TestHook_MethodReturnedIntValue()
         {
-            Container.Instance
-                .Bind<OriginalMethod>().ToSelf()
-                .InjectionTo()
-                .MethodResult<int, int>("GetNumber").WithArguments<int>(2023);
+            var container = new Container();
+            container.Bind<OriginalMethod>().ToSelf()
+                    .InjectionTo()
+                    .MethodResult<int, int>("GetNumber")
+                    .WithArguments<int>(2023);
 
-            var hookedMethod = Container.Instance[typeof(OriginalMethod)]
-                                                 [typeof(HookedMethodResult<int,int>)][0];
+            var hookedMethod = container[typeof(OriginalMethod)][typeof(HookedMethodResult<int,int>)][0];
 
             var instance = new OriginalMethod();
 
@@ -69,23 +88,21 @@
             returnedValue = instance.GetNumber(222);
             Assert.AreEqual(2023, returnedValue);
 
-            Container.Reset();
+            container.Dispose();
         }
 
         [Test]
         public void TestHook_MethodsReturnedIntValue()
         {
-            Container.Instance
-                .Bind<OriginalMethod_2>().ToSelf()
-                .InjectionTo()
-                .MethodResult<int, int>("GetNumber").WithArguments<int>(2023)
-                .MethodResult<int, int>("GetNumber_SecondMethod").WithArguments<int>(9999);
+            var container = new Container();
+            container.Bind<OriginalMethod_2>().ToSelf()
+                    .InjectionTo()
+                    .MethodResult<int, int>("GetNumber").WithArguments<int>(2023)
+                    .MethodResult<int, int>("GetNumber_SecondMethod").WithArguments<int>(9999);
 
-            var hookedMethod = Container.Instance[typeof(OriginalMethod_2)]
-                                               [typeof(HookedMethodResult<int, int>)][0];
+            var hookedMethod = container[typeof(OriginalMethod_2)][typeof(HookedMethodResult<int, int>)][0];
 
-            var hookedMethodSecond = Container.Instance[typeof(OriginalMethod_2)]
-                                                     [typeof(HookedMethodResult<int, int>)][1];
+            var hookedMethodSecond = container[typeof(OriginalMethod_2)][typeof(HookedMethodResult<int, int>)][1];
 
 
             var instance = new OriginalMethod_2();
@@ -110,23 +127,21 @@
             secondValue = instance.GetNumber_SecondMethod(222);
             Assert.AreEqual(9999, secondValue);
 
-            Container.Reset();
+            container.Dispose();
         }
 
         [Test]
         public void TestHook_MethodsReturnedIntAndFloatValues()
         {
-            Container.Instance
-                .Bind<OriginalMethod_3>().ToSelf()
-                .InjectionTo()
-                .MethodResult<int, int>("GetNumber").WithArguments<int>(2023)
-                .MethodResult<float, float>("GetNumber").WithArguments<float>(0.123f);
+            var container = new Container();
+            container.Bind<OriginalMethod_3>().ToSelf()
+                    .InjectionTo()
+                    .MethodResult<int, int>("GetNumber").WithArguments<int>(2023)
+                    .MethodResult<float, float>("GetNumber").WithArguments<float>(0.123f);
 
-            var hookedMethod = Container.Instance[typeof(OriginalMethod_3)]
-                                               [typeof(HookedMethodResult<int, int>)][0];
+            var hookedMethod = container[typeof(OriginalMethod_3)][typeof(HookedMethodResult<int, int>)][0];
 
-            var hookedMethodSecond = Container.Instance[typeof(OriginalMethod_3)]
-                                                     [typeof(HookedMethodResult<float, float>)][0];
+            var hookedMethodSecond = container[typeof(OriginalMethod_3)][typeof(HookedMethodResult<float, float>)][0];
 
 
             var instance = new OriginalMethod_3();
@@ -151,13 +166,27 @@
             floatValue = instance.GetNumber(0.222f);
             Assert.AreEqual(0.123f, floatValue);
 
-            Container.Reset();
+            container.Dispose();
+        }
+
+        [Test]
+        public void TestHook_Scoped()
+        {
+            var container = new Container();
+            container.Bind<IRotate>().To<Rotate>();
+            container.Bind<Cube>().ToSelf(UseDefaultConstructor: true);
+
+            var cube = Activator.CreateInstance<Cube>();
+            cube.Update();
+
+            Assert.AreEqual(1.75f, cube.CheckValue);
+
+            container.Dispose();
         }
 
         [OneTimeTearDown]
         public void TearDown()
         {
-            Container.Reset();
             GC.Collect();
         }
     }

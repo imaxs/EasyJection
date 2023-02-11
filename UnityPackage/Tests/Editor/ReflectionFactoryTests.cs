@@ -85,10 +85,19 @@
             Assert.AreEqual(null, reflectedData.MethodsData.MethodsParsInfo[3]);
         }
 
+        [Test]
+        public void TestFields_FromBased()
+        {
+            var factory = new ReflectionFactory();
+            var reflectedData = factory.Create(typeof(HeirMockClass));
+
+            Assert.AreEqual(5, reflectedData.FieldsInfo.Length);
+        }
+
         [OneTimeTearDown]
         public void TearDown()
         {
-            Container.Reset();
+            Containers.Reset();
             GC.Collect();
         }
     }
