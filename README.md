@@ -2,6 +2,7 @@
 <br/>
 <h4>EasyJection is an easy-to-use Dependency Injection Framework</h4>
 
+![GitHub](https://img.shields.io/github/v/release/imaxs/EasyJection?color=%23f9c83d&include_prereleases)
 ![GitHub](https://img.shields.io/github/license/imaxs/EasyJection)
 ![GitHub issues](https://img.shields.io/github/issues/imaxs/EasyJection)
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/imaxs/EasyJection/main)
