@@ -106,8 +106,8 @@ public class Cube : MonoBehaviour
 }
 ```
 *➡️ This approach has some problems:*
-- ❌ The need to always assign fields in the inspector.
-- ❌ Unity doesn't support displaying C# interfaces in the Inspector (Interfaces are not serializable).
+- ⭕️ The need to always assign fields in the inspector.
+- ⭕️ Unity doesn't support displaying C# interfaces in the Inspector (Interfaces are not serializable).
 
 ⬇️ There is an attempt at a solution:
 <table><tr><td><details>
@@ -148,9 +148,9 @@ public class Cube : MonoBehaviour
 </details></td></tr></table>
 
 *➡️ Each of these ways is a workable solution, but they all have same disadvantages:*
-- ❌ When a class holds its dependencies and tries to manage them itself without any interference from others, it's an anti-pattern named *Control Freak*.
-- ❌ The need to manually write in the source code of each component. 
-- ❌ Extending and maintaining the classes in your project will take a lot more effort.
+- ⭕️ When a class holds its dependencies and tries to manage them itself without any interference from others, it's an anti-pattern named *Control Freak*.
+- ⭕️ The need to manually write in the source code of each component. 
+- ⭕️ Extending and maintaining the classes in your project will take a lot more effort.
 
 ⬇️ We can try to solve the disadvantages described above by using any other popular IOC / DI framework for the Unity game engine:
 <table><tr><td><details>
@@ -176,10 +176,10 @@ public class Cube : MonoBehaviour
 </details></td></tr></table>
 
 *➡️ It's almost perfect, but there are some snags:*
-- ❌ The need to add the Using directive to each source code file of our project (`using AnyOtherDIFramework;` in this case).
-- ❌ The need to manually write attributes in the source code of each component.
-- ❌ As in the previous solution, extending and maintaining the classes in your project will take a lot more effort.
-- ❌ The *Cube* class indirectly begins to know where it gets its dependency from.
+- ⭕️ The need to add the Using directive to each source code file of our project (`using AnyOtherDIFramework;` in this case).
+- ⭕️ The need to manually write attributes in the source code of each component.
+- ⭕ As in the previous solution, extending and maintaining the classes in your project will take a lot more effort.
+- ⭕️ The *Cube* class indirectly begins to know where it gets its dependency from.
 
 **✅ The EasyJection framework aims to solve all this and more!**
 
@@ -667,31 +667,31 @@ The dependency will be resolved for each parameter if its value is NULL.
 
 Look at this sample:
 ```csharp
-   public class SomeClass
-   {
-       public string Text;
-       public int Number;
-       
-       public SomeClass(string text, int number)
-       {
-           this.Text = name;
-           this.Number = number;
-       }
-   }
-   
-   ...
-   
-   // Binding
-   container.Bind<OriginalMethod_3>().ToSelf()
-            .InjectionTo()
-            .Constructor<string, int>(UseForInstantiation: True | False)
-            .WithArguments<string, int>("EasyJection", 2023);
-   
-   // Now, when a constructor is called with arguments, the original arguments will always be overwrite.
-   var instance = new SomeClass("Hi!", 101);
-     
-   Console.log(instance.Text == "EasyJection");
-   Console.log(instance.Number == 2023);
+  public class SomeClass
+  {
+      public string Text;
+      public int Number;
+
+      public SomeClass(string text, int number)
+      {
+          this.Text = name;
+          this.Number = number;
+      }
+  }
+
+  ...
+
+  // Binding
+  container.Bind<OriginalMethod_3>().ToSelf()
+           .InjectionTo()
+           .Constructor<string, int>(UseForInstantiation: True | False)
+           .WithArguments<string, int>("EasyJection", 2023);
+
+  // Now, when a constructor is called with arguments, the original arguments will always be overwrite.
+  var instance = new SomeClass("Hi!", 101);
+
+  Console.log(instance.Text == "EasyJection");
+  Console.log(instance.Number == 2023);
 ```
 Result:
 - _True_
