@@ -495,7 +495,11 @@ Where:
  - *UseDefaultConstructor* — If True, the injection occurs each time the default constructor is called (from `new()`).
  
 #### 🔘 To Factory ####
-When you need to handle object instantiation manually, you can create a factory class by inheriting it from `EasyJection.Types.IFactory` interface.
+When you need to handle object instantiation manually, you can create a factory class. You can create it in two ways by inheriting your class from `EasyJection.Types.IFactory` interface or without it. There are different binding methods for each type of factory.
+
+Let's consider the first case.
+
+The simplest factory inherited from `EasyJection.Types.IFactory` interface:
 ```csharp
 public class MyFactory : EasyJection.Types.IFactory {
      /// <summary>
@@ -510,16 +514,35 @@ public class MyFactory : EasyJection.Types.IFactory {
      }
 }
 ```
-There are two ways to bind the factory.
+There are two ways to bind a factory inherited from `EasyJection.Types.IFactory` interface
 ```csharp
 // #1 The container creates the factory itself.
 container.Bind<ISomeInterface>()
          .ToFactory<MyFactory>(UseDefaultConstructor: True | False);
  
-// #2 or bind it to an existing factory instance.
+// #2 or binding an existing factory instance.
 container.Bind<ISomeInterface>()
          .ToFactory<MyFactory>(factoryInstance);
 ```
+Where:
+ - *UseDefaultConstructor* — If True, the injection occurs each time the default constructor is called (from `new()`).
+
+The second case, when your factory class does NOT inherit from `EasyJection.Types.IFactory` interface:
+
+```csharp
+public class MyCustomFactory {
+     /// Creates an instance of an object of the type
+     public object CreateInstance() {
+        var myObject = new SomeClass();
+        return myObject;
+     }
+}
+```
+To bind, you need to specify the factory class and a name of a method that creates instances.
+```csharp
+container.Bind<ISomeInterface>()
+         .ToFactory<MyCustomFactory>("CreateInstance", UseDefaultConstructor: True | False);
+``` 
 Where:
  - *UseDefaultConstructor* — If True, the injection occurs each time the default constructor is called (from `new()`).
  
