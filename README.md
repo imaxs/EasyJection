@@ -7,7 +7,7 @@
 ![GitHub issues](https://img.shields.io/github/issues/imaxs/EasyJection)
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/imaxs/EasyJection/main)
 
-✅ | <b>➡️ Without using any attributes for injection</b>
+✅ | <b>Without using any attributes for injection</b>
 :---: | :---
 ✅ | <b>Quick and easy setup to get started</b>
 ✅ | <b>There is no need to add a Using directive to each project file that uses DI</b>
@@ -180,7 +180,7 @@ public class Cube : MonoBehaviour
 - ❌ As in the previous solution, extending and maintaining the classes in your project will take a lot more effort.
 - ❌ The *Cube* class indirectly begins to know where it gets its dependency from.
 
-**✅ EasyJection was created precisely to eliminate all this!**
+**✅ The EasyJection framework aims to solve all this and more!**
 
 ℹ️ In order to start using this framework, you <ins>don't</ins> need to add `using EasyJection;` to each source code file, and also <ins>don't</ins> need to specify any attributes.
 
