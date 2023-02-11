@@ -36,7 +36,8 @@
          * [Constructor Injection](#-constructor-injection)
          * [Method Injection](#-method-injection)
            * [Non-return Method (MethodVoid)](#non-return-method-methodvoid)
-           * [Method with result (MethodResult)](#method-with-result-methodresult) 
+           * [Method with result (MethodResult)](#method-with-result-methodresult)
+         * [Passing Arguments](#passing-arguments)
          * [Injection Notes](#injection-notes)
   * [Change Log](#-change-log)
   * [Contributing](#-contributing)
@@ -657,6 +658,48 @@ container.Bind<SomeClass>()
   - *methodName* — the name of a method.
   - *<T1, T2 ... T9>* — types of constructor parameters.
   - *TResult* — type of return value.
+  
+#### Passing Arguments ####
+EasyJection allows you to pass arguments to a method or constructor. To specify the arguments to be passed use `WithArguments()`.
+The dependency will be resolved for each parameter if its value is NULL.
+
+⚠️ Arguments passed via `With Arguments()` overwrite the original passed values when the method/constructor is called from anywhere in your code.
+
+Look at this sample:
+```csharp
+   public class SomeClass
+   {
+       public string Text;
+       public int Number;
+       
+       public SomeClass(string text, int number)
+       {
+           this.Text = name;
+           this.Number = number;
+       }
+   }
+   
+   ...
+   
+   // Binding
+   container.Bind<OriginalMethod_3>().ToSelf()
+            .InjectionTo()
+            .Constructor<string, int>(UseForInstantiation: True | False)
+            .WithArguments<string, int>("EasyJection", 2023);
+   
+   // Now, when a constructor is called with arguments, the original arguments will always be overwrite.
+   var instance = new SomeClass("Hi!", 101);
+     
+   Console.log(instance.Text == "EasyJection");
+   Console.log(instance.Number == 2023);
+```
+Result:
+- _True_
+- _True_
+
+Where:
+  - *UseForInstantiation* — if True, the container will use this constructor to create an instance, otherwise it will use the default constructor.
+
 #### Injection Notes ####
 
 ## 💾 Change Log ##
