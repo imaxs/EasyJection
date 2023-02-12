@@ -151,6 +151,25 @@ namespace EasyJection.Tests.EditMode
         }
     }
 
+    /// <summary>
+    /// Basic mock with an array.
+    /// </summary>
+    public class MockClassArrayField
+    {
+        public IMockClassInterface[] fieldArray;
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public MockClassArrayField() 
+            : this(new IMockClassInterface[10])
+        { }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private MockClassArrayField(IMockClassInterface[] array)
+        {
+            this.fieldArray = array;
+        }
+    }
+
     public class HeirMockClassFactory : Types.IFactory
     {
         public object CreateInstance(IBindingData bindingData = null)
@@ -312,10 +331,10 @@ namespace EasyJection.Tests.EditMode
             }
         }
 
-        public class OriginalMethod_3
-        {
-            private string name;
-            private int number;
+            public class OriginalMethod_3
+            {
+                private string name;
+                private int number;
 
             public OriginalMethod_3()
                 : this(null, 0)

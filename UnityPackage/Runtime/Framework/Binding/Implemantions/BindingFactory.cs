@@ -68,10 +68,13 @@ namespace EasyJection.Binding
             return this.CreateBindingConditionFactoryProvider(binding);
         }
 
-        /// <inheritdoc cref="IBindingFactory.AddFactoryInstance(Type, IFactory)"/>
-        public IBindingInjection AddFactoryInstance(Type type, IFactory factory) 
+        /// <inheritdoc cref="IBindingFactory.AddFactoryInstance(Type, IFactory, object)"/>
+        public IBindingInjection AddFactoryInstance(Type type, IFactory factoryInstance, object value = null) 
         {
-            var binding = new BindingData(this.BindingType, factory, type, BindingInstanceType.Factory | BindingInstanceType.Instance);
+            var binding = new BindingData(this.BindingType, 
+                                          factoryInstance, 
+                                          value, 
+                                          BindingInstanceType.Factory | BindingInstanceType.Instance);
             this.Binder.AddBinding(binding);
 
             return this.CreateBindingInjectionFactoryProvider(binding);

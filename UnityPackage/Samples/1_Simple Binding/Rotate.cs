@@ -1,13 +1,15 @@
 ﻿// Rotate.cs
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
-public class Rotate : IRotate
+namespace EasyJection.Samples.SimpleBinding
 {
-    private Cube m_Cube;
-
-    public void DoRotate(float x, float y, float z)
+    public class Rotate : IRotate
     {
-        m_Cube.transform.Rotate(x, y, z);
+        private Cube m_Cube;
+
+        public void DoRotate(float x, float y, float z)
+        {
+            m_Cube.transform.Rotate(x, y, z);
+        }
     }
 }

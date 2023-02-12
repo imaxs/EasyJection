@@ -22,7 +22,7 @@ using System;
 namespace EasyJection.Binding
 {
     using EasyJection.Types;
-    using Hooking;
+
     #region Comment
     /// <summary>
     /// Contains the definitions of the binding factory.
@@ -57,11 +57,11 @@ namespace EasyJection.Binding
     ///         <description>Binds the key type to a <paramref name="type"/> as a singleton.</description>
     ///     </item>
     ///     <item>
-    ///         <term><see cref="IBindingFactory.To(Type)"/></term>
+    ///         <term><see cref="IBindingFactory.To(Type, bool)"/></term>
     ///         <description>Binds the key type to a <paramref name="type"/> as a transient.</description>
     ///     </item>
     ///     <item>
-    ///         <term><see cref="IBindingFactory.To{T}()"/></term>
+    ///         <term><see cref="IBindingFactory.To{T}(bool)"/></term>
     ///         <description>Binds the key type to a type of <typeparamref name="T"/> as a transient.</description>
     ///     </item>
     ///     <item>
@@ -81,7 +81,7 @@ namespace EasyJection.Binding
     ///         <description>Binds the key type to an <paramref name="instance"/> of a type which has implemented <see cref="Types.IFactory"/> interface.</description>
     ///     </item>
     ///     <item>
-    ///         <term><see cref="IBindingFactory.AddBinding(object)"/></term>
+    ///         <term><see cref="IBindingFactory.AddBinding(object, bool)"/></term>
     ///         <description>Creates a binding.</description>
     ///     </item>
     ///     <item>
@@ -233,7 +233,8 @@ namespace EasyJection.Binding
         /// </summary>
         /// <param name="type">The type of instance that will be created by the <see cref="Types.IFactory"/> factory.</param>
         /// <param name="factoryInstance">Factory creating instances</param>
+        /// <param name="value">[Optional] Some value that can be used by the factory during instantiation.</param>
         /// <returns>The binding injection object related to this binding.</returns>
-        IBindingInjection AddFactoryInstance(Type type, IFactory factoryInstance);
+        IBindingInjection AddFactoryInstance(Type type, IFactory factoryInstance, object value = null);
     }
 }

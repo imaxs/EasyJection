@@ -2,21 +2,22 @@
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-public class BasicCube : MonoBehaviour
+namespace EasyJection.Samples.SimpleBinding
 {
-    protected IRotate m_RotateSystem;
-}
-
-public class Cube : BasicCube
-{
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    public Cube()
+    public class BasicCube : MonoBehaviour
     {
-        UnityEngine.Debug.Log("Cube()");
+        protected IRotate m_RotateSystem;
     }
 
-    private void Update()
+    public class Cube : BasicCube
     {
-        m_RotateSystem.DoRotate(0, 0.25f, 0);
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public Cube()
+        { }
+
+        private void Update()
+        {
+            m_RotateSystem.DoRotate(0, 0.25f, 0);
+        }
     }
 }

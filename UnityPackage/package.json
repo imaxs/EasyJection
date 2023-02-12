@@ -1,10 +1,10 @@
 {
   "name": "com.imaxs.easyjection",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "displayName": "EasyJection",
   "description": "EasyJection is an easy-to-use Dependency Injection (DI) Framework for Unity Engine and beyond.",
   "documentationUrl": "https://github.com/imaxs/EasyJection/tree/main",
-  "changelogUrl": "https://github.com/imaxs/EasyJection/blob/main/UnityPackage/CHANGELOG.md",
+  "changelogUrl": "https://github.com/imaxs/EasyJection/blob/main/CHANGELOG.md",
   "licensesUrl": "https://github.com/imaxs/EasyJection/blob/main/LICENSE",
   "license": "Apache-2.0",
   "keywords": [
@@ -18,5 +18,6 @@
     "name": "Max Karepin",
     "url": "https://www.linkedin.com/in/max-kv/"
   },
-  "type": "library"
+  "type": "library",
+  "unity": "2020.1"
 }

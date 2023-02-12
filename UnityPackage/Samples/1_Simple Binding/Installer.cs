@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using UnityEngine;
 
-namespace EasyJection
+namespace EasyJection.Samples.SimpleBinding
 {
+    [DefaultExecutionOrder(-800)]
     public class Installer : MonoInstaller
     {
         protected override void InstallBindings()
