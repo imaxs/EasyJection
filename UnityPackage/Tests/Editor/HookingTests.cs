@@ -12,6 +12,20 @@
     {
 
         [Test]
+        public void TestHook_Array()
+        {
+            var container = new Container();
+            container.Bind<IMockClassInterface>().To<MockClass>();
+            container.Bind<MockClassArrayField>().ToSelf(UseDefaultConstructor: true);
+
+            var instance = new MockClassArrayField();
+
+            Assert.AreEqual(10, instance.fieldArray.Length);
+
+            container.Dispose();
+        }
+
+        [Test]
         public void TestHook_String()
         {
             var container = new Container();

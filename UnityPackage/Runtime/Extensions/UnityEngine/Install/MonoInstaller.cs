@@ -25,11 +25,17 @@ using System;
 
 namespace EasyJection
 {
+    using EasyJection.Extensions;
+    using System.Collections.Generic;
 #if UNITY_ENGINE_AVAILABLE
     using UnityEngine;
 
+    [DisallowMultipleComponent]
     public abstract class MonoInstaller : MonoBehaviour
     {
+        [SerializeField]
+        protected StringGameObjectPair[] gameObjects;
+        
         protected IContainer Container;
 
         protected abstract void InstallBindings();
@@ -40,6 +46,19 @@ namespace EasyJection
                 Container = new Container();
 
             this.InstallBindings();
+        }
+
+        protected void Awake()
+        {
+            if (gameObjects != null && gameObjects.Length > 0)
+            {
+                var dict = new Dictionary<string, GameObject>();
+
+                foreach (var pair in gameObjects)
+                    dict.Add(pair.Key, pair.Object);
+
+                Mono.SetDictionary(dict);
+            }
         }
 
         protected void OnDestroy()

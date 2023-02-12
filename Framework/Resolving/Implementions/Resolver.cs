@@ -105,7 +105,11 @@ namespace EasyJection.Resolving
             if (bindingData.InstanceType.HasFlag(BindingInstanceType.Instance))
             {
                 if (bindingData.InstanceType.HasFlag(BindingInstanceType.Factory))
-                    return bindingData.Factory.CreateInstance(bindingData);
+                {
+                    var instValue = bindingData.Factory.CreateInstance(bindingData);
+                    this.Inject(instValue);
+                    return instValue;
+                }
                 else
                     return bindingData.Value;
             }
@@ -130,6 +134,11 @@ namespace EasyJection.Resolving
             }
 
             return instance;
+        }
+
+        protected object Resolve(Type type)
+        {
+            return this.Resolve(type, null);
         }
 
         /// <inheritdoc cref="IResolver.Resolve(object[], Type[])"/>
@@ -196,11 +205,17 @@ namespace EasyJection.Resolving
                 hookManager.Hook();
             }
 
-            // Add an item to the scoped dictionary
-            scopedInstances.Add(bindingData.Type, instance);
-
-            // Dependency Injection
-            this.Inject(instance, this.cache[instanceType], scopedInstances);
+            if (scopedInstances != null)
+            {
+                // Add an item to the scoped dictionary
+                scopedInstances.Add(bindingData.Type, instance);
+                // Dependency Injection
+                this.Inject(instance, this.cache[instanceType], scopedInstances);
+            }
+            else
+            {
+                this.Inject(instance);
+            }
 
             return instance;
         }
@@ -232,7 +247,7 @@ namespace EasyJection.Resolving
             for (int fieldIndex = 0; fieldIndex < fields.Length; fieldIndex++)
             {
                 var field = fields[fieldIndex];
-
+                var fieldType = field.Type;
                 var value = field.InvokeGetter(instance);
 
                 // The Equals(null) comparison is used to ensure that null is evaluated correctly due to the null trick
@@ -240,8 +255,27 @@ namespace EasyJection.Resolving
                 {
                     try
                     {
-                        var valueToSet = scopedInstances.ContainsKey(field.Type) ? scopedInstances[field.Type] : this.Resolve(field.Type, scopedInstances);
+                        var valueToSet = scopedInstances.ContainsKey(fieldType) ? scopedInstances[fieldType] : this.Resolve(fieldType, scopedInstances);
                         field.InvokeSetter(instance, valueToSet);
+                    }
+                    catch (Exception exception)
+                    {
+                        throw new Exception(
+                            string.Format(Causes.UNABLE_TO_INJECT_ON_FIELD, field.Name, instance.GetType(), exception.Message), exception);
+                    }
+                }
+                else if (fieldType.IsArray) 
+                {
+                    try
+                    {
+                        var elemType = fieldType.GetElementType();
+                        var array = (field.InvokeGetter(instance) as object[]);
+                        for (int i = 0; i < array.Length; i++)
+                        {
+                            if (array[i] == null)
+                                array[i] = this.Resolve(elemType);
+                        }
+                        scopedInstances.Add(fieldType, array);
                     }
                     catch (Exception exception)
                     {

@@ -1,7 +1,10 @@
 ﻿// IRotate.cs
 using UnityEngine;
 
-public interface IRotate
+namespace EasyJection.Samples.SimpleBinding
 {
-    void DoRotate(float x, float y, float z);
+    public interface IRotate
+    {
+        void DoRotate(float x, float y, float z);
+    }
 }

@@ -32,12 +32,14 @@
          * [To Factory](#-to-factory)
          * [To Instance](#-to-instance)
          * [To Self](#-to-self)
+         * [To GameObject](#-to-gameobject)
      * [Injection Conditions](#injection-conditions)
          * [Constructor Injection](#-constructor-injection)
          * [Method Injection](#-method-injection)
            * [Non-return Method (MethodVoid)](#non-return-method-methodvoid)
            * [Method with result (MethodResult)](#method-with-result-methodresult)
          * [Passing Arguments](#passing-arguments)
+         * [Array Injection](#array-injection)
          * [Injection Notes](#injection-notes)
   * [Change Log](#-change-log)
   * [Contributing](#-contributing)
@@ -561,7 +563,24 @@ container.Bind<SomeClass>().ToSelf(UseDefaultConstructor: True | False);
 ```
  Where:
  - *UseDefaultConstructor* — If True, the injection occurs each time the default constructor is called (from `new()`).
- 
+
+#### 🔘 To GameObject ####
+The EasyJection framework allows you to create a binding to a Unity's gameobject that has a type of component you need.
+
+To bind to a gameobject, it must first be added to the installer's gameobjects collection:
+
+<img src="https://github.com/imaxs/EasyJection/blob/develop/Documentation/Images/InstallerGameObjectsCollection.png?sanitize=true)"/>
+The added prefab named `Cube` has a `Cube` component implementing a `ICube` interface and inherited from MonoBehaviour.
+
+After that the specified prefab named `Cube` can be used for binding as transient.
+
+```csharp
+// "Cube" is the key name of the gameobject in the installer collection
+Container.Bind<ICube>().ToGameObject<Cube>("Cube");
+// or so, in this case the type name is used (⚠️ a type name should match a key in the collection)
+Container.Bind<ICube>().ToGameObject<Cube>();
+```
+
 ### Injection Conditions ###
 EasyJection provides injection through a constructor or method call. Constructor injection forces the dependency to only be resolved once, at instance creation, which is usually what you want. Inject methods are the recommended approach for MonoBehaviours (e.g. 'Awake' and 'Start' methods). Injection conditions are set by calling the `InjectionTo()` method. In order to specify a constructor or method for injection, you need to specify its signature.
 
@@ -596,7 +615,6 @@ container.Bind<SomeClass>()
          .Constructor<T1, T2 ... T9>(UseForInstantiation: True | False)
          .WithArguments<T1, T2 ... T9>(T1 arg1, T2 arg2 ... T9 arg9);
 ```
-
 Where:
   - *UseForInstantiation* — if True, the container will use this constructor to create an instance, otherwise it will use the default constructor.
   - *<T1, T2 ... T9>* — types of constructor parameters.
@@ -628,6 +646,7 @@ container.Bind<SomeClass>()
          .MethodVoid<T1, T2 ... T9>(methodName);
          .WithArguments<T1, T2 ... T9>(T1 arg1, T2 arg2 ... T9 arg9);
 ```
+Where:
   - *methodName* — the name of a non-return method
   - *<T1, T2 ... T9>* — types of constructor parameters.
 ##### Method with result (MethodResult) #####
@@ -655,6 +674,7 @@ container.Bind<SomeClass>()
          .MethodResult<T1, T2 ... T9, TResult>(methodName);
          .WithArguments<T1, T2 ... T9>(T1 arg1, T2 arg2 ... T9 arg9);
 ```
+Where:
   - *methodName* — the name of a method.
   - *<T1, T2 ... T9>* — types of constructor parameters.
   - *TResult* — type of return value.
@@ -700,7 +720,42 @@ Result:
 Where:
   - *UseForInstantiation* — if True, the container will use this constructor to create an instance, otherwise it will use the default constructor.
 
+#### Array Injection ####
+The EasyJection framework can inject and resolve all registered implementations for each array element in a field.
+
+```csharp
+  public class Foo
+  {
+      public ISomeInterface[] fieldArray;
+
+      [MethodImpl(MethodImplOptions.NoInlining)]
+      // The array must be created before injection.
+      public SomeClass() 
+          // the size of the array is 10
+          : this(new ISomeInterface[10])
+      { }
+
+      [MethodImpl(MethodImplOptions.NoInlining)]
+      private SomeClass(ISomeInterface[] array)
+      {
+          this.fieldArray = array;
+      }
+  }
+  
+  ...
+  // Binding
+  var container = new Container();
+  container.Bind<ISomeInterface>().To<SomeClass>();
+  container.Bind<Foo>().ToSelf(UseDefaultConstructor: true);
+  
+  ...
+  // So now the EasyJection framework creates and resolves 10 elements in a field named 'fieldArray'
+  var instance = new Foo();
+```
+
 #### Injection Notes ####
+
+// TODO
 
 ## 💾 Change Log ##
 

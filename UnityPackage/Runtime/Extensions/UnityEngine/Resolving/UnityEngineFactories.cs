@@ -34,15 +34,16 @@ namespace EasyJection.Extensions
     {
         public object CreateInstance(IBindingData bindingData = null)
         {
-            return new GameObject((bindingData.Value as Type).Name);
-        }
-    }
+            var prefabBinding = bindingData.Value as PrefabBinding;
+            if (prefabBinding == null)
+                throw new Exception(string.Format("The \"{0}\" type must be a PrefabBinding.", bindingData.Value?.GetType()));
 
-    public class UnityEngineComponentInstantiateFactory : IFactory
-    {
-        public object CreateInstance(IBindingData bindingData = null)
-        {
-            return new GameObject((bindingData.Value as Type).Name);
+            if (prefabBinding.Prefab == null)
+                prefabBinding.Prefab = Mono.GetGameObjectByName(prefabBinding.KeyName);
+
+            GameObject gameObject = (GameObject)MonoBehaviour.Instantiate(prefabBinding.Prefab);
+
+            return gameObject.GetComponent(prefabBinding.Type);
         }
     }
 #endif
