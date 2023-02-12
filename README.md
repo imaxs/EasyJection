@@ -25,6 +25,7 @@
   * [Usage](#-usage)
      * [General notes](#general-notes)
      * [DI / IoC container](#di--ioc-container)
+     * [Installers](#installers)
      * [Bindings](#bindings)
        * [Available Bindings](#available-bindings)
          * [To Implementation](#-to-implementation)
@@ -301,7 +302,7 @@ public class EntryPoint
          container.Bind<Cube>().ToSelf().InjectionTo().MethodVoid("Awake");
  
         /* Note: You can also create a container and set bindings in a class inherited
-                 from MonoBehaviour and then add the script to the current active scene.
+                 from MonoInstaller and then add the script to the current active scene.
                  This script needs to be called first. Verify the script execution order
                  in Unity by accessing the menu: Edit->Project Settings->Script Execution Order 
                  and add the script to execute before all other scripts. Enter a large 
@@ -389,6 +390,24 @@ using EasyJection;
 ...
 // Create the container
 Container container = new Container();
+```
+### Installers ###
+This is relevant for use in Unity. Create an empty GameObject and add it to Unity's scene, then create an installation script containing the inherited `MonoInstaller` class, and attach the script as a component to the created empty GameObject. Create your all bindings inside the `InstallBindings()` method.
+
+>This script needs to be called first. Verify the script execution order in Unity by accessing the menu: Edit->Project Settings->Script Execution Order and add the script to execute before all other scripts. Enter a large negative number to have this script before all the others on the list.
+
+For example, in one of the samples you can find this code in the installer:
+```csharp
+  [DefaultExecutionOrder(-800)] // This is an undocumented alternative to this ( Edit->Project Settings->Script Execution Order)
+  public class Installer : MonoInstaller
+  {
+      protected override void InstallBindings()
+      {
+          Container.Bind<IRotate>().To<Rotate>();
+          Container.Bind<ICube>().ToGameObject<Cube>("Cube");
+          Container.Bind<CircleFormation>().ToSelf().InjectionTo().MethodVoid("Awake");
+      }
+  }
 ```
 
 ### Bindings ###
@@ -570,6 +589,7 @@ The EasyJection framework allows you to create a binding to a Unity's gameobject
 To bind to a gameobject, it must first be added to the installer's gameobjects collection:
 
 <img src="https://github.com/imaxs/EasyJection/blob/develop/Documentation/Images/InstallerGameObjectsCollection.png?sanitize=true)"/>
+
 The added prefab named `Cube` has a `Cube` component implementing a `ICube` interface and inherited from MonoBehaviour.
 
 After that the specified prefab named `Cube` can be used for binding as transient.
