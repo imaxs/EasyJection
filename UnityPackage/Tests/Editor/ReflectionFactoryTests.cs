@@ -5,8 +5,6 @@
     using System;
     using NUnit.Framework;
     using EasyJection.Reflection;
-    using FluentAssertions;
-    using System.Diagnostics;
 
     public class ReflectionFactoryTests
     {

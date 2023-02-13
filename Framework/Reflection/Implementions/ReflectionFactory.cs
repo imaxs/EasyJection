@@ -25,7 +25,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 
 namespace EasyJection.Reflection
 {
@@ -44,7 +43,7 @@ namespace EasyJection.Reflection
         }
 
         #region Private Methods
-        private ParameterInfo[][] GetParameters(_MethodBase[] methods)
+        private ParameterInfo[][] GetParameters(MethodBase[] methods)
         {
             ParameterInfo[][] args = new ParameterInfo[methods.Length][];
 
@@ -54,7 +53,7 @@ namespace EasyJection.Reflection
             return args;
         }
 
-        private ParameterInfo[] GetParameters(_MethodBase method)
+        private ParameterInfo[] GetParameters(MethodBase method)
         {
             var _params = method.GetParameters();
             if (_params == null || _params.Length == 0)

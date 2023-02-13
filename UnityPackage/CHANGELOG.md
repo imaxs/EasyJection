@@ -11,8 +11,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [1.0.3] - 2023-02-13
+- Fixed compilation errors on IL2CPP
+- Cleared of unnecessary dependencies
+- Removed logging on IL2CPP
+
 ## [1.0.2] - 2023-02-13
-- Fixed bugs with dependency resolution for instances created by the factory.
+- Fixed bugs with resolving dependencies for instances created by the factory.
 - Added support resolve for an array in field.
 - Added support for binding to GameObject.
 - Updated samples and added new ones.
