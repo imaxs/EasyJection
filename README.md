@@ -639,7 +639,7 @@ Where:
   - *UseForInstantiation* — if True, the container will use this constructor to create an instance, otherwise it will use the default constructor.
   - *<T1, T2 ... T9>* — types of constructor parameters.
 #### 🔘 Method Injection ####
-The Inject-injection method works very similar to constructor injection in terms of specifying parameter types. However, there are nuances. There are two types of methods that return values and non-return (named as void). 
+The method injection works very similar to constructor injection in terms of specifying parameter types. However, there are nuances. There are two types of methods that return values and non-return (named as void). 
 
 ##### Non-return Method (MethodVoid)  #####
 To specify the non-return method use the `MethodVoid()`.

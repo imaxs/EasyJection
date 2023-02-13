@@ -20,6 +20,9 @@
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+#if ENABLE_IL2CPP
+using System.Runtime.InteropServices;
+#endif
 
 namespace EasyJection.Hooking
 {
@@ -77,11 +80,11 @@ namespace EasyJection.Hooking
         public HookManager(IMethodInvokeData invokeData, MethodBase hooked, MethodBase original, bool HookImmediately = true)
         {
             this.isHooked = false;
-            this.bytes = new byte[Architecture.SIZE_X64];
             this.hookedMethod = hooked;
             this.originalMethod = original;
             this.invokeData = invokeData;
 #if !ENABLE_IL2CPP
+            this.bytes = new byte[Architecture.SIZE_X64];
             RuntimeHelpers.PrepareMethod(originalMethod.MethodHandle);
             RuntimeHelpers.PrepareMethod(hookedMethod.MethodHandle);
 #endif
@@ -153,7 +156,7 @@ namespace EasyJection.Hooking
             if (this.isHooked)
                 return;
 #if ENABLE_IL2CPP
-            IL2CPP.__IL2CPP_LOG("Hooked: InjectMethod: " + hookedMethod.Name + " | Original: " + originalMethod.Name);
+            // IL2CPP.__IL2CPP_LOG("Hooked: InjectMethod: " + hookedMethod.Name + " | Original: " + originalMethod.Name);
             m_Il2CPPStruct = new __IL2CPP() { originalMethodBase = originalMethod, 
                                               hookedMethodBase = hookedMethod };
             unsafe

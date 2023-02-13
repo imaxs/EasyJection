@@ -5,7 +5,6 @@
     using System;
     using NUnit.Framework;
     using EasyJection.Binding;
-    using FluentAssertions;
     using EasyJection.Hooking;
     using EasyJection.Binding.Extensions;
 
