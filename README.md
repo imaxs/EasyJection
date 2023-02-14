@@ -10,7 +10,7 @@
 ✅ | <b>Without using any attributes for injection</b>
 :---: | :---
 ✅ | <b>Quick and easy setup to get started</b>
-✅ | <b>There is no need to add a Using directive to each project file that uses DI</b>
+✅ | <b>Using DI without having to add a `Using` directive to each project file.</b>
 ✅ | <b>Allows for much more flexible, reusable, and encapsulated code to be written</b>
 
 ## 🗂 Contents ##
@@ -74,12 +74,13 @@ Unfortunately the Unity game engine isn't very SOLID-friendly out of the box. Ev
       * Method injection
       * Field injection
       * Property injection
+      * Parameter injection
     * Inherited from MonoBehaviour
       * Constructor injection *(as the Unity documentation says, you shouldn't implement and call constructors for MonoBehaviours. Unity automatically invokes the constructor.)*
       * Method injection *(through Awake() and Start(), or other custom methods)*
       * Field injection
       * Property injection
-  * Replacing the original parameters of the method/constructor.
+      * Parameter injection 
   * Can inject on non public members.
   * Convention based binding.
   * Conditional binding *(eg. by method name, by signature, etc.)*
