@@ -10,7 +10,7 @@
 ✅ | <b>Without using any attributes for injection</b>
 :---: | :---
 ✅ | <b>Quick and easy setup to get started</b>
-✅ | <b>There is no need to add a Using directive to each project file that uses DI</b>
+✅ | <b>Using DI without having to add a `Using` directive to each project file.</b>
 ✅ | <b>Allows for much more flexible, reusable, and encapsulated code to be written</b>
 
 ## 🗂 Contents ##
@@ -42,6 +42,7 @@
          * [Passing Arguments](#passing-arguments)
          * [Array Injection](#array-injection)
          * [Injection Notes](#injection-notes)
+  * [Circular Dependency](#-circular-dependency)
   * [Change Log](#-change-log)
   * [Contributing](#-contributing)
   * [License](#-license)
@@ -74,12 +75,13 @@ Unfortunately the Unity game engine isn't very SOLID-friendly out of the box. Ev
       * Method injection
       * Field injection
       * Property injection
+      * Parameter injection
     * Inherited from MonoBehaviour
       * Constructor injection *(as the Unity documentation says, you shouldn't implement and call constructors for MonoBehaviours. Unity automatically invokes the constructor.)*
       * Method injection *(through Awake() and Start(), or other custom methods)*
       * Field injection
       * Property injection
-  * Replacing the original parameters of the method/constructor.
+      * Parameter injection 
   * Can inject on non public members.
   * Convention based binding.
   * Conditional binding *(eg. by method name, by signature, etc.)*
@@ -356,7 +358,7 @@ public class Rotate : IRotate
 }
 ```
 </details>
-                                            
+
 ## 🛠 Installation ##
 
 ### You can install EasyJection using any of the below options: ###
@@ -776,6 +778,64 @@ The EasyJection framework can inject and resolve all registered implementations 
 #### Injection Notes ####
 
 // TODO
+
+## 🔃 Circular Dependency ##
+A circular dependency occurs when two classes depend on each other. For example, class A needs class B, and class B also needs class A. The EasyJection framework supports the resolution of Circular Dependencies.
+
+A Quick Example:
+```csharp
+// Defining two beans that depend on each other (via constructor injection):
+// #1
+public class CircularDependencyA : ICircularDependencyA
+{
+   private ICircularDependencyB circB;
+
+   [MethodImpl(MethodImplOptions.NoInlining)]
+   public CircularDependencyA(ICircularDependencyB circB) {
+       this.circB = circB;
+   }
+}
+
+// #2
+public class CircularDependencyB : ICircularDependencyB
+{
+   private ICircularDependencyA circA;
+
+   [MethodImpl(MethodImplOptions.NoInlining)]
+   public CircularDependencyB(ICircularDependencyA circA) {
+       this.circA = circA;
+   }
+}
+
+// Defining a class that will use one of the beans
+public class App 
+{
+   public ICircularDependencyA circA;
+    
+   [MethodImpl(MethodImplOptions.NoInlining)]
+   public App() {
+       this.circA = null;
+   }
+}
+```
+Creating a binding:
+```csharp
+   container.Bind<ICircularDependencyA>()
+            .To<CircularDependencyA>()
+            .InjectionTo()
+            .Constructor<ICircularDependencyB>(UseForInstantiation: True);
+
+   container.Bind<ICircularDependencyB>()
+            .To<CircularDependencyB>()
+            .InjectionTo()
+            .Constructor<ICircularDependencyA>(UseForInstantiation: True);
+
+   container.Bind<App>().ToSelf(UseDefaultConstructor: true);
+```
+Dependencies will be resolved each time an instance of the `App` class is created.
+```csharp
+   var app = new App();
+```
 
 ## 💾 Change Log ##
 
