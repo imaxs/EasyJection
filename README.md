@@ -42,6 +42,7 @@
          * [Passing Arguments](#passing-arguments)
          * [Array Injection](#array-injection)
          * [Injection Notes](#injection-notes)
+  * [Circular Dependency](#-circular-dependency)
   * [Change Log](#-change-log)
   * [Contributing](#-contributing)
   * [License](#-license)
@@ -357,7 +358,7 @@ public class Rotate : IRotate
 }
 ```
 </details>
-                                            
+
 ## 🛠 Installation ##
 
 ### You can install EasyJection using any of the below options: ###
@@ -777,6 +778,64 @@ The EasyJection framework can inject and resolve all registered implementations 
 #### Injection Notes ####
 
 // TODO
+
+## 🔃 Circular Dependency ##
+A circular dependency occurs when two classes depend on each other. For example, class A needs class B, and class B also needs class A. The EasyJection framework supports the resolution of Circular Dependencies.
+
+A Quick Example:
+```csharp
+// Defining two beans that depend on each other (via constructor injection):
+// #1
+public class CircularDependencyA : ICircularDependencyA
+{
+   private ICircularDependencyB circB;
+
+   [MethodImpl(MethodImplOptions.NoInlining)]
+   public CircularDependencyA(ICircularDependencyB circB) {
+       this.circB = circB;
+   }
+}
+
+// #2
+public class CircularDependencyB : ICircularDependencyB
+{
+   private ICircularDependencyA circA;
+
+   [MethodImpl(MethodImplOptions.NoInlining)]
+   public CircularDependencyB(ICircularDependencyA circA) {
+       this.circA = circA;
+   }
+}
+
+// Defining a class that will use one of the beans
+public class App 
+{
+   public ICircularDependencyA circA;
+    
+   [MethodImpl(MethodImplOptions.NoInlining)]
+   public App() {
+       this.circA = null;
+   }
+}
+```
+Creating a binding:
+```csharp
+   container.Bind<ICircularDependencyA>()
+            .To<CircularDependencyA>()
+            .InjectionTo()
+            .Constructor<ICircularDependencyB>(UseForInstantiation: True);
+
+   container.Bind<ICircularDependencyB>()
+            .To<CircularDependencyB>()
+            .InjectionTo()
+            .Constructor<ICircularDependencyA>(UseForInstantiation: True);
+
+   container.Bind<App>().ToSelf(UseDefaultConstructor: true);
+```
+Dependencies will be resolved each time an instance of the `App` class is created.
+```csharp
+   var app = new App();
+```
 
 ## 💾 Change Log ##
 
