@@ -670,7 +670,7 @@ container.Bind<SomeClass>()
 ```
 Where:
   - *methodName* — the name of a non-return method
-  - *<T1, T2 ... T9>* — types of constructor parameters.
+  - *<T1, T2 ... T9>* — types of parameters.
 ##### Method with result (MethodResult) #####
 To specify a method that returns a result, use `MethodResult()`.
  
@@ -698,7 +698,7 @@ container.Bind<SomeClass>()
 ```
 Where:
   - *methodName* — the name of a method.
-  - *<T1, T2 ... T9>* — types of constructor parameters.
+  - *<T1, T2 ... T9>* — types of parameters.
   - *TResult* — type of return value.
   
 #### Passing Arguments ####
